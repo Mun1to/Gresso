@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITULO__</title>
+<style>
+/* ===== PALETA (es lo único que se cambia para adaptar al proyecto) ===== */
+:root{
+  --bg:#f7f7f8;
+  --panel:#ffffff;
+  --borde:#e3e3e7;
+  --texto:#1a1a1e;
+  --suave:#62626c;
+  --acento:#3b5bdb;
+  --hecho:#2f9e44;
+  --haciendo:#1971c2;
+  --pendiente:#868e96;
+  --bloqueado:#e03131;
+  --descartado:#adb5bd;
+  --radio:14px;
+  --fuente:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#111114;
+    --panel:#1a1a1f;
+    --borde:#2c2c33;
+    --texto:#f1f1f3;
+    --suave:#9b9ba5;
+    --acento:#748ffc;
+    --hecho:#51cf66;
+    --haciendo:#4dabf7;
+    --pendiente:#868e96;
+    --bloqueado:#ff6b6b;
+    --descartado:#5c5c66;
+  }
+}
+/* ===== ESTRUCTURA (no se toca: todo va por var()) ===== */
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--texto);
+  font-family:var(--fuente);line-height:1.5;
+  padding:24px 16px 72px;
+}
+.envoltura{max-width:860px;margin:0 auto}
+header{margin-bottom:20px}
+h1{font-size:clamp(1.35rem,4vw,1.9rem);margin:0 0 6px;letter-spacing:-.01em}
+.subtitulo{color:var(--suave);margin:0 0 10px;font-size:.98rem}
+.sello{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:.82rem;color:var(--suave);
+  background:var(--panel);border:1px solid var(--borde);
+  border-radius:999px;padding:5px 12px;
+}
+.sello b{color:var(--texto);font-weight:600}
+.latido{width:7px;height:7px;border-radius:50%;background:var(--acento);flex:none}
+
+.resumen{
+  position:sticky;top:0;z-index:5;
+  background:var(--panel);border:1px solid var(--borde);border-radius:var(--radio);
+  padding:16px;margin:18px 0 22px;
+}
+.cifra{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.porcentaje{font-size:2.1rem;font-weight:700;letter-spacing:-.02em;line-height:1}
+.de-cuantas{color:var(--suave);font-size:.95rem}
+.barra{height:12px;border-radius:999px;background:var(--bg);overflow:hidden;display:flex;border:1px solid var(--borde)}
+.barra i{display:block;height:100%;transition:width .25s ease}
+.barra .b-hecho{background:var(--hecho)}
+.barra .b-haciendo{background:var(--haciendo)}
+.barra .b-bloqueado{background:var(--bloqueado)}
+.fichas{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.ficha{
+  display:inline-flex;align-items:center;gap:7px;font-size:.84rem;
+  border:1px solid var(--borde);border-radius:999px;padding:4px 11px;color:var(--suave);
+}
+.ficha b{color:var(--texto);font-weight:600}
+.punto{width:9px;height:9px;border-radius:50%;flex:none}
+.p-hecho{background:var(--hecho)}
+.p-haciendo{background:var(--haciendo)}
+.p-pendiente{background:var(--pendiente)}
+.p-bloqueado{background:var(--bloqueado)}
+.p-descartado{background:var(--descartado)}
+
+.aviso{
+  border:1px solid var(--bloqueado);border-left-width:4px;border-radius:var(--radio);
+  background:var(--panel);padding:14px 16px;margin-bottom:20px;
+}
+.aviso h2{margin:0 0 8px;font-size:.95rem;color:var(--bloqueado);letter-spacing:.02em;text-transform:uppercase}
+.aviso ul{margin:0;padding-left:20px}
+.aviso li{margin:4px 0}
+
+.parte{
+  background:var(--panel);border:1px solid var(--borde);border-radius:var(--radio);
+  padding:14px 16px;margin-bottom:22px;color:var(--texto);
+}
+.parte h2{margin:0 0 6px;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--suave)}
+.parte p{margin:0 0 8px}
+.parte p:last-child{margin-bottom:0}
+
+.fase{margin-bottom:22px}
+.fase-cab{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.fase-cab h2{margin:0;font-size:1.02rem}
+.fase-cuenta{color:var(--suave);font-size:.85rem;white-space:nowrap}
+.mini{height:5px;border-radius:999px;background:var(--borde);overflow:hidden;margin-bottom:10px}
+.mini i{display:block;height:100%;background:var(--hecho)}
+
+ul.tareas{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+li.tarea{
+  display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;
+  background:var(--panel);border:1px solid var(--borde);border-radius:11px;padding:11px 13px;
+}
+li.tarea .marca{
+  width:18px;height:18px;border-radius:50%;flex:none;margin-top:2px;
+  border:2px solid var(--pendiente);display:grid;place-items:center;
+}
+li.tarea.hecho .marca{border-color:var(--hecho);background:var(--hecho)}
+li.tarea.hecho .marca::after{content:"";width:5px;height:9px;border:solid var(--panel);border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+li.tarea.haciendo .marca{border-color:var(--haciendo)}
+li.tarea.haciendo .marca::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--haciendo)}
+li.tarea.bloqueado .marca{border-color:var(--bloqueado)}
+li.tarea.bloqueado .marca::after{content:"";width:2px;height:10px;background:var(--bloqueado);border-radius:1px}
+li.tarea.descartado{opacity:.55}
+li.tarea.descartado .texto{text-decoration:line-through}
+li.tarea.hecho .texto{color:var(--suave)}
+.texto{font-size:.97rem}
+.nota{display:block;color:var(--suave);font-size:.85rem;margin-top:3px}
+.etiqueta{
+  display:inline-block;font-size:.72rem;border-radius:999px;padding:1px 8px;margin-left:6px;
+  border:1px solid var(--borde);color:var(--suave);vertical-align:middle;
+}
+li.tarea.haciendo .etiqueta{color:var(--haciendo);border-color:var(--haciendo)}
+li.tarea.bloqueado .etiqueta{color:var(--bloqueado);border-color:var(--bloqueado)}
+
+footer{margin-top:28px;color:var(--suave);font-size:.84rem;text-align:center}
+footer code{background:var(--panel);border:1px solid var(--borde);border-radius:6px;padding:1px 6px}
+.vacio{color:var(--suave);font-style:italic}
+@media (max-width:520px){
+  .resumen{position:static}
+  .porcentaje{font-size:1.8rem}
+}
+</style>
+</head>
+<body>
+<div class="envoltura">
+  <header>
+    <h1 id="titulo">__TITULO__</h1>
+    <p class="subtitulo" id="subtitulo"></p>
+    <span class="sello"><span class="latido"></span>Actualizado <b id="sello-fecha"></b></span>
+  </header>
+
+  <section class="resumen" aria-label="Progreso general">
+    <div class="cifra">
+      <span class="porcentaje" id="porcentaje">0%</span>
+      <span class="de-cuantas" id="de-cuantas"></span>
+    </div>
+    <div class="barra" id="barra" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+    <div class="fichas" id="fichas"></div>
+  </section>
+
+  <div id="bloqueos"></div>
+  <div id="parte"></div>
+  <main id="fases"></main>
+
+  <footer>Pulsa <code>F5</code> para ver lo último. La página no se mueve sola.</footer>
+</div>
+
+<script id="gresso-datos" type="application/json">__DATOS_JSON__</script>
+<script>
+(function(){
+  var D = JSON.parse(document.getElementById("gresso-datos").textContent);
+  var ESTADOS = ["hecho","haciendo","pendiente","bloqueado","descartado"];
+  var NOMBRES = {hecho:"hechas",haciendo:"en curso",pendiente:"pendientes",bloqueado:"bloqueadas",descartado:"descartadas"};
+
+  function texto(el, v){ el.textContent = v || ""; }
+  function peso(t){ return typeof t.peso === "number" && t.peso > 0 ? t.peso : 1; }
+
+  var fases = D.fases || [];
+  var todas = [];
+  fases.forEach(function(f){ (f.tareas||[]).forEach(function(t){ todas.push(t); }); });
+
+  var cuenta = {}; ESTADOS.forEach(function(e){ cuenta[e] = 0; });
+  var pesoTotal = 0, pesoHecho = 0, pesoHaciendo = 0, pesoBloqueado = 0;
+  todas.forEach(function(t){
+    var e = ESTADOS.indexOf(t.estado) >= 0 ? t.estado : "pendiente";
+    cuenta[e] += 1;
+    if (e === "descartado") return;          // lo descartado sale del total: no es trabajo que quede
+    pesoTotal += peso(t);
+    if (e === "hecho") pesoHecho += peso(t);
+    if (e === "haciendo") pesoHaciendo += peso(t);
+    if (e === "bloqueado") pesoBloqueado += peso(t);
+  });
+
+  var pct = pesoTotal ? Math.round(pesoHecho / pesoTotal * 100) : 0;
+  document.title = pct + "% " + (D.titulo || "Seguimiento");
+  texto(document.getElementById("titulo"), D.titulo || "Seguimiento");
+  texto(document.getElementById("subtitulo"), D.subtitulo);
+  texto(document.getElementById("sello-fecha"), D.actualizado || "sin fecha");
+  texto(document.getElementById("porcentaje"), pct + "%");
+
+  var hechas = cuenta.hecho, totalCuenta = todas.length - cuenta.descartado;
+  texto(document.getElementById("de-cuantas"),
+        hechas + " de " + totalCuenta + " tareas" + (totalCuenta - hechas ? ", quedan " + (totalCuenta - hechas) : ""));
+
+  var barra = document.getElementById("barra");
+  barra.setAttribute("aria-valuenow", String(pct));
+  function tramo(clase, p){
+    if (!p) return;
+    var i = document.createElement("i");
+    i.className = clase;
+    i.style.width = (p / pesoTotal * 100) + "%";
+    barra.appendChild(i);
+  }
+  tramo("b-hecho", pesoHecho); tramo("b-haciendo", pesoHaciendo); tramo("b-bloqueado", pesoBloqueado);
+
+  var fichas = document.getElementById("fichas");
+  ESTADOS.forEach(function(e){
+    if (!cuenta[e]) return;
+    var s = document.createElement("span");
+    s.className = "ficha";
+    s.innerHTML = '<span class="punto p-' + e + '"></span><b>' + cuenta[e] + '</b> ' + NOMBRES[e];
+    fichas.appendChild(s);
+  });
+
+  var bloqueadas = todas.filter(function(t){ return t.estado === "bloqueado"; });
+  if (bloqueadas.length){
+    var caja = document.createElement("section");
+    caja.className = "aviso";
+    var h = document.createElement("h2");
+    h.textContent = bloqueadas.length === 1 ? "Bloqueado" : "Bloqueados";
+    caja.appendChild(h);
+    var ul = document.createElement("ul");
+    bloqueadas.forEach(function(t){
+      var li = document.createElement("li");
+      li.textContent = t.texto + (t.nota ? ": " + t.nota : "");
+      ul.appendChild(li);
+    });
+    caja.appendChild(ul);
+    document.getElementById("bloqueos").appendChild(caja);
+  }
+
+  if (D.parte){
+    var p = document.createElement("section");
+    p.className = "parte";
+    var ph = document.createElement("h2");
+    ph.textContent = "Dónde voy";
+    p.appendChild(ph);
+    String(D.parte).split("\n").filter(Boolean).forEach(function(linea){
+      var pp = document.createElement("p");
+      pp.textContent = linea;
+      p.appendChild(pp);
+    });
+    document.getElementById("parte").appendChild(p);
+  }
+
+  var cont = document.getElementById("fases");
+  if (!todas.length){
+    var v = document.createElement("p");
+    v.className = "vacio";
+    v.textContent = "Todavía no hay tareas apuntadas.";
+    cont.appendChild(v);
+  }
+  fases.forEach(function(f){
+    var tareas = f.tareas || [];
+    var sec = document.createElement("section");
+    sec.className = "fase";
+
+    var utiles = tareas.filter(function(t){ return t.estado !== "descartado"; });
+    var fHechas = tareas.filter(function(t){ return t.estado === "hecho"; }).length;
+    var fPct = utiles.length ? Math.round(fHechas / utiles.length * 100) : 0;
+
+    var cab = document.createElement("div");
+    cab.className = "fase-cab";
+    var h2 = document.createElement("h2");
+    h2.textContent = f.nombre || "Tareas";
+    var c = document.createElement("span");
+    c.className = "fase-cuenta";
+    c.textContent = fHechas + "/" + utiles.length + "  ·  " + fPct + "%";
+    cab.appendChild(h2); cab.appendChild(c);
+    sec.appendChild(cab);
+
+    var mini = document.createElement("div");
+    mini.className = "mini";
+    mini.innerHTML = '<i style="width:' + fPct + '%"></i>';
+    sec.appendChild(mini);
+
+    var ul = document.createElement("ul");
+    ul.className = "tareas";
+    tareas.forEach(function(t){
+      var e = ESTADOS.indexOf(t.estado) >= 0 ? t.estado : "pendiente";
+      var li = document.createElement("li");
+      li.className = "tarea " + e;
+      var marca = document.createElement("span");
+      marca.className = "marca";
+      marca.setAttribute("aria-hidden", "true");
+      var cuerpo = document.createElement("div");
+      var sp = document.createElement("span");
+      sp.className = "texto";
+      sp.textContent = t.texto || "";
+      cuerpo.appendChild(sp);
+      if (e === "haciendo" || e === "bloqueado"){
+        var et = document.createElement("span");
+        et.className = "etiqueta";
+        et.textContent = e === "haciendo" ? "en curso" : "bloqueado";
+        cuerpo.appendChild(et);
+      }
+      if (t.nota){
+        var n = document.createElement("span");
+        n.className = "nota";
+        n.textContent = t.nota;
+        cuerpo.appendChild(n);
+      }
+      li.appendChild(marca); li.appendChild(cuerpo);
+      ul.appendChild(li);
+    });
+    sec.appendChild(ul);
+    cont.appendChild(sec);
+  });
+
+  // Recargar con F5 no deberia perder el sitio donde estabas leyendo.
+  try {
+    var clave = "gresso-scroll:" + location.pathname;
+    var y = sessionStorage.getItem(clave);
+    if (y) window.scrollTo(0, parseInt(y, 10) || 0);
+    window.addEventListener("beforeunload", function(){
+      try { sessionStorage.setItem(clave, String(window.scrollY)); } catch(_){}
+    });
+  } catch(_){}
+})();
+</script>
+</body>
+</html>

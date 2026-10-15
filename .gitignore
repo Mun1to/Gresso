@@ -1,0 +1,8 @@
+# Contexto interno del taller: no sale en un repositorio publico
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+BUZON.md
+.github/copilot-instructions.md
+.cursor/
+__pycache__/

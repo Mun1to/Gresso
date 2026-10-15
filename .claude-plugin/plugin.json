@@ -1,0 +1,13 @@
+{
+  "name": "gresso",
+  "description": "A live progress page for long agent tasks: a one-file HTML with a progress bar, percentage, what is done, what is left and what is blocked, rewritten by the agent as it works and checked with F5.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Mun1to",
+    "url": "https://github.com/Mun1to"
+  },
+  "homepage": "https://github.com/Mun1to/Gresso",
+  "repository": "https://github.com/Mun1to/Gresso",
+  "license": "MIT",
+  "keywords": ["progress", "tracking", "checklist", "html", "workflow"]
+}
