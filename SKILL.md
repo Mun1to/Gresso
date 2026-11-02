@@ -1,13 +1,13 @@
 ---
 name: gresso
-description: Monta el documento de seguimiento de un encargo largo como un HTML de un solo archivo que el agente va reescribiendo mientras trabaja, con barra de progreso, porcentaje, cuántas tareas quedan, cuáles están hechas, cuáles en curso y cuáles bloqueadas, en una ruta fija que se mira pulsando F5. Úsalo al empezar cualquier trabajo de varios pasos o que vaya a durar un rato, y cuando pidan "qué queda por hacer", "un seguimiento", "ponme el progreso", "una lista con casillas", "un HTML que se vaya actualizando", "quiero ver por dónde vas sin preguntarte" o "/gresso". Sustituye a ir cantando el avance por la terminal.
+description: Monta el documento de seguimiento de un encargo largo como un HTML de un solo archivo que el agente va reescribiendo mientras trabaja, con barra de progreso, porcentaje, cuántas tareas quedan, cuáles están hechas, cuáles en curso y cuáles bloqueadas, en una ruta fija, y la pestaña abierta se pone al día sola. Úsalo al empezar cualquier trabajo de varios pasos o que vaya a durar un rato, y cuando pidan "qué queda por hacer", "un seguimiento", "ponme el progreso", "una lista con casillas", "un HTML que se vaya actualizando", "quiero ver por dónde vas sin preguntarte" o "/gresso". Sustituye a ir cantando el avance por la terminal.
 ---
 
 # Gresso
 
-El progreso de un encargo en una página que no hay que pedir: lo hecho, lo que queda y lo que
-está parado. Mientras el agente trabaja va reescribiendo el mismo archivo, así que cualquiera
-abre la pestaña, pulsa `F5` y ve por dónde va **sin cortarle y sin esperar al cierre**.
+El progreso de un encargo en una sola página que no hay que pedir. Mientras el agente trabaja va
+reescribiendo el mismo archivo, y la pestaña abierta se pone al día sola en unos segundos, sin
+pulsar nada: cualquiera la mira y ve por dónde va **sin cortarle y sin esperar al cierre**.
 
 Sin esto hay dos salidas malas: preguntarle al agente (y pararlo) o esperar al resumen final.
 Un seguimiento que solo se escribe al terminar no es un seguimiento, es un informe.
@@ -87,10 +87,14 @@ para eso está `ver`.
 
 Ábrelo tú mismo en el navegador (`Start-Process "<ruta>"` en Windows, `open` en macOS,
 `xdg-open` en Linux), sin pedir permiso y sin limitarte a dejar la ruta escrita para que otro la
-abra a mano. En el chat, **una sola línea**: qué estás haciendo y que con `F5` lo ve al día.
+abra a mano. En el chat, **una sola línea**: qué estás haciendo y que la página se pone al día sola.
 Nunca repitas la lista de tareas en la terminal: ya la tiene delante.
 
-La página **no se refresca sola**, y es a propósito: así no se le mueve mientras lee.
+La página **se pone al día sola**: cada orden escribe `<ruta>.version.js` al lado del HTML, la
+pestaña lo pide cada 5 segundos y solo recarga si ha cambiado. Sin cambios no recarga ni parpadea,
+y al recargar conserva el scroll, lo plegado, lo marcado y lo escrito. No recarga mientras alguien
+escribe o tiene un texto seleccionado. **Deja ese archivo junto al HTML**: si lo mueves o lo
+borras, la pestaña deja de enterarse.
 
 ### 4. Reescríbelo cada vez que avanzas, no al final
 
@@ -146,7 +150,7 @@ interno, no se sube a un repositorio público.
 - **Mini barra por fase**, con su propio `hechas/total` y su porcentaje.
 - **La hora de la última actualización en la cabecera**, y el porcentaje también en el título de
   la pestaña, para verlo sin cambiar de ventana.
-- **Recargar no te mueve de sitio**: guarda el scroll antes de salir y vuelve donde estabas.
+- **Se pone al día sola y no te mueve de sitio**: conserva el scroll al recargar.
 
 Si el proyecto donde trabajas tiene su propio sistema de diseño, cambia los valores del bloque
 `PALETA` de la plantilla (los `--bg`, `--acento`, `--radio`, la tipografía) con un `replace` de

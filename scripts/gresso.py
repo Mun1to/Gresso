@@ -15,14 +15,15 @@ datos.json  -> {"titulo":..., "subtitulo":..., "parte":..., "fases":[{"nombre":.
                 "tareas":[{"id":"t1","texto":"...","estado":"pendiente","nota":"...","peso":1}]}]}
 tareas.json -> la lista de tareas sola, con la misma forma.
 
-Todo comando reescribe la fecha y la hora de arriba, que es lo que le dice al lector
-si lo que está mirando es de ahora.
+Toda orden que cambia algo escribe también <salida.html>.version.js: la pestaña abierta lo
+pide cada pocos segundos y se pone al día sola, sin pulsar F5.
 """
 
 import json
 import os
 import re
 import sys
+import time
 from datetime import datetime
 
 ESTADOS = ("pendiente", "haciendo", "hecho", "bloqueado", "descartado")
@@ -120,9 +121,28 @@ def extraer(ruta):
     return html, json.loads(m.group(2).replace("<\\/", "</"))
 
 
-def guardar(ruta, html, datos):
+def escribir(ruta, texto):
+    # De una vez: la pestaña abierta nunca recarga un archivo a medio escribir.
+    temporal = ruta + ".tmp"
+    with open(temporal, "w", encoding="utf-8") as f:
+        f.write(texto)
+    for _ in range(20):
+        try:
+            os.replace(temporal, ruta)
+            return
+        except PermissionError:
+            # En Windows falla si el navegador está leyendo justo en ese momento.
+            time.sleep(0.05)
     with open(ruta, "w", encoding="utf-8") as f:
-        f.write(incrustar(html, datos))
+        f.write(texto)
+    os.remove(temporal)
+
+
+def guardar(ruta, html, datos):
+    escribir(ruta, incrustar(html, datos))
+    # La página pide este script cada pocos segundos y solo recarga si ha cambiado. Va después
+    # del HTML: si fuera antes, la pestaña podría recargar y seguir viendo lo de antes.
+    escribir(ruta + ".version.js", 'window.__gressoVersion="%f";\n' % time.time())
     print(os.path.abspath(ruta))
 
 

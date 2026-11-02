@@ -326,6 +326,23 @@ footer code{background:var(--panel);border:1px solid var(--borde);border-radius:
       try { sessionStorage.setItem(clave, String(window.scrollY)); } catch(_){}
     });
   } catch(_){}
+
+  // Se pone al día sola: un script de al lado dice si el archivo ha cambiado, y solo entonces recarga.
+  var inicial = null;
+  function mirar(){
+    var s = document.createElement("script");
+    s.src = location.pathname.split("/").pop() + ".version.js?x=" + Date.now();
+    s.onload = function(){
+      s.remove();
+      var v = window.__gressoVersion;
+      if (inicial === null) inicial = v;
+      else if (v !== inicial && !(window.getSelection() && !window.getSelection().isCollapsed)) { location.reload(); return; }
+      setTimeout(mirar, 5000);
+    };
+    s.onerror = function(){ s.remove(); setTimeout(mirar, 30000); };
+    document.head.appendChild(s);
+  }
+  mirar();
 })();
 </script>
 </body>

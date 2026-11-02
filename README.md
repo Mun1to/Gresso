@@ -3,7 +3,7 @@
 A Claude Code skill that gives a long task its own live progress page. Instead of narrating
 every step in the terminal, or making you interrupt it to ask how far along it is, the agent
 keeps rewriting one HTML file as it works: a progress bar, a percentage, what is done, what is
-left and what is blocked. You leave the tab open and press `F5` whenever you want to look.
+left and what is blocked. You leave the tab open and it keeps itself up to date.
 
 ![A Gresso page: 57% done, one task blocked, two phases with their own progress](assets/preview.png)
 
@@ -61,8 +61,9 @@ One HTML file, opened straight in your own browser, never a hosted page:
 - The time of the last update in the header, and the percentage in the tab title, so you can
   check it without even switching tabs.
 - Light or dark following your system, readable on a phone, no internet needed.
-- It does not refresh by itself, on purpose: nothing moves while you are reading. Reloading
-  keeps your scroll position.
+- It updates by itself, no `F5`: each command writes a small `<page>.html.version.js` next to
+  the page, the open tab asks for it every 5 seconds and reloads only if it changed. No changes,
+  no reload. It keeps your scroll position and waits while you are typing or selecting text.
 
 The page labels are in Spanish. The task text is whatever language the agent writes it in.
 
