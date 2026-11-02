@@ -44,8 +44,22 @@ Cada tarea admite:
 - `estado` - `pendiente` (por defecto), `haciendo`, `hecho`, `bloqueado`, `descartado`.
 - `nota` - una línea de detalle, y en lo bloqueado **qué falta exactamente** para desbloquearlo.
 - `peso` - un número, solo cuando una tarea vale por varias y un porcentaje plano mentiría.
+- `quien` - `"tu"` si le toca a quien lee; sin este campo, la tarea es del agente.
 - `id` - se lo pone el script solo (`t1`, `t2`...). Un id **no cambia nunca**, aunque luego se
   añadan tareas en medio, así que se puede recordar para marcarla después.
+
+Lo de la persona va aparte de lo del agente, en dos columnas en pantalla grande y en una en el
+móvil, y con todo lo que necesita para hacerlo sin preguntar:
+
+- `porque` - por qué le toca, en una o dos frases.
+- `pasos` - la lista de pasos numerados.
+- `acciones` - botones: `{"texto": "Abrir el panel", "url": "https://..."}` abre un enlace y
+  `{"texto": "Copiar el correo", "copiar": "..."}` copia un dato.
+- `dime` - lo que tiene que decirte al acabar.
+
+Cada tarea suya lleva una casilla que guarda en su navegador y cuenta en el porcentaje. **Esa casilla
+no llega a ti**: cuando te lo diga, márcala con `estado`, y entonces cuenta también en `ver`. `porque`,
+`pasos`, `dime` y `nota` admiten `<strong>`, `<em>`, `<code>` y enlaces; cualquier otra etiqueta se ignora.
 
 Lo `descartado` sale del total: no es trabajo que quede, y dejarlo contando hunde el porcentaje
 sin motivo. Se queda escrito y tachado, porque saber qué se decidió no hacer es información.

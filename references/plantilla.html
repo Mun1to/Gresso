@@ -63,6 +63,23 @@ a { color:var(--acento-texto); }
 .nota { display:block; font-size:1rem; color:var(--suave); }
 .estado-palabra { font-weight:700; color:var(--acento-texto); }
 .estado-palabra.parado { color:var(--rojo); }
+.tarjeta { background:var(--card); border:2px solid var(--linea); border-radius:8px; padding:20px; margin-bottom:16px; }
+.tarjeta h3 { margin-bottom:8px; }
+.tarjeta p { margin:0 0 10px; }
+.tarjeta .quien { display:grid; grid-template-columns:32px minmax(0,1fr); gap:0 14px; }
+.tarjeta ol { margin:0 0 12px; padding-left:1.4rem; }
+.tarjeta li { margin:0 0 6px; }
+.dime { color:var(--tinta); font-weight:600; margin:10px 0 0 !important; }
+.acciones { display:flex; flex-wrap:wrap; gap:10px; margin:12px 0 0; }
+.boton { display:inline-flex; align-items:center; justify-content:center; min-height:48px; padding:8px 18px; border-radius:8px; border:0; font:700 1rem/1.2 var(--letra-titulos); cursor:pointer; text-decoration:none; background:var(--boton-suave); color:var(--boton-suave-texto); transition:filter .18s ease; }
+.boton.fuerte { background:var(--acento); color:var(--sobre-acento); }
+.boton:hover { filter:brightness(1.12); }
+.boton:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible { outline:3px solid var(--acento-texto); outline-offset:2px; }
+input[type=checkbox] { appearance:none; -webkit-appearance:none; width:26px; height:26px; margin:0; border:2px solid var(--caja); border-radius:5px; background:transparent; cursor:pointer; flex:none; display:grid; place-items:center; }
+input[type=checkbox]:checked { background:var(--verde); border-color:var(--verde); }
+input[type=checkbox]:checked::after { content:""; width:7px; height:13px; border:solid #fff; border-width:0 3px 3px 0; transform:translateY(-2px) rotate(45deg); }
+.recogida h3 { text-decoration:line-through; color:var(--suave); }
+.recogida .cuerpo-tarjeta { display:none; }
 @media (max-width:1000px) {
   .arriba, .columnas { grid-template-columns:minmax(0,1fr); }
   .mascota { width:72px; height:72px; }
@@ -136,8 +153,8 @@ a { color:var(--acento-texto); }
 
   var fases = D.fases || [], todas = [];
   fases.forEach(function(f){ (f.tareas || []).forEach(function(t){ todas.push(t); }); });
-  function deLaPersona(){ return false; }
-  function marcada(){ return false; }
+  function deLaPersona(t){ return t.quien === "tu" || !!t.decision; }
+  function marcada(t){ return t.quien === "tu" && !t.decision && !!marcas[t.id]; }
   function hecha(t){ return t.estado === "hecho" || marcada(t); }
   function queda(t){ return !hecha(t) && t.estado !== "descartado"; }
   function peso(t){ return typeof t.peso === "number" && t.peso > 0 ? t.peso : 1; }
@@ -186,6 +203,40 @@ a { color:var(--acento-texto); }
   }
 
 
+  // Lo que le toca a quien lee: por qué, pasos, botones y una casilla que cuenta en el porcentaje.
+  var tocan = todas.filter(function(t){ return t.quien === "tu" && !t.decision && t.estado !== "hecho" && t.estado !== "descartado"; });
+  if (tocan.length) {
+    var cajaToca = $("toca");
+    cajaToca.appendChild(el("h2", "", "Lo que te toca"));
+    tocan.forEach(function(t){
+      var tar = el("article", "tarjeta"); tar.id = "t-" + t.id;
+      var fila = el("div", "quien");
+      var c = el("input"); c.type = "checkbox"; c.checked = !!marcas[t.id]; c.setAttribute("aria-label", "Hecho: " + t.texto);
+      var cuerpo = el("div");
+      cuerpo.appendChild(el("h3", "", t.texto));
+      var dentro = el("div", "cuerpo-tarjeta");
+      if (t.estado === "bloqueado" && t.nota) { var p = rico("p", "", t.nota); p.insertBefore(el("span", "estado-palabra parado", "Parado: "), p.firstChild); dentro.appendChild(p); }
+      else if (t.nota) dentro.appendChild(rico("p", "", t.nota));
+      if (t.porque) dentro.appendChild(rico("p", "", t.porque));
+      if (t.pasos && t.pasos.length) { var ol = el("ol"); t.pasos.forEach(function(q){ ol.appendChild(rico("li", "", q)); }); dentro.appendChild(ol); }
+      if (t.acciones && t.acciones.length) {
+        var ac = el("div", "acciones");
+        t.acciones.forEach(function(a){
+          // Lo que se copia no se enseña: solo el nombre del botón.
+          if (a.url && /^(https?:|mailto:|file:)/i.test(a.url)) { var l = el("a", "boton", a.texto); l.href = a.url; l.target = "_blank"; l.rel = "noopener"; ac.appendChild(l); }
+          else if (a.copiar !== undefined) { var b = el("button", "boton", a.texto || "Copiar"); b.type = "button"; b.onclick = function(){ aPortapapeles(String(a.copiar), b, "Copiado"); }; ac.appendChild(b); }
+        });
+        dentro.appendChild(ac);
+      }
+      if (t.dime) dentro.appendChild(rico("p", "dime", t.dime));
+      cuerpo.appendChild(dentro);
+      function recoger(){ tar.classList.toggle("recogida", !!marcas[t.id]); }
+      c.onchange = function(){ if (c.checked) marcas[t.id] = 1; else delete marcas[t.id]; guardar("marcas", marcas); recoger(); refrescar(); };
+      fila.appendChild(c); fila.appendChild(cuerpo); tar.appendChild(fila);
+      recoger();
+      cajaToca.appendChild(tar);
+    });
+  }
 
   function filaTarea(t, sinPalabra){
     var clase = hecha(t) ? "hecho" : t.estado === "haciendo" || t.estado === "bloqueado" || t.estado === "descartado" ? t.estado : "";

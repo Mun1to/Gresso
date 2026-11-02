@@ -55,6 +55,9 @@ One HTML file, opened straight in your own browser, never a hosted page:
 - The state of a task is a plain bold word and a checkbox: no pills, no coloured dots, nothing
   that pulses.
 - Blocked tasks come first in the agent's list, each with what is missing to unblock it.
+- What you have to do goes apart from what the agent does, in two columns on a big screen and one
+  on a phone: why, numbered steps, buttons to open a link or copy a value, what to say when you
+  finish, and a checkbox saved in your browser that counts towards the percentage.
 - A short "where I am" note the agent keeps up to date, in two or three lines.
 - Tasks grouped in phases, each with its count.
 - Dropped tasks stay visible but crossed out, and do not count towards the total, so the

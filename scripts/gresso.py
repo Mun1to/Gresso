@@ -15,6 +15,9 @@ datos.json  -> {"titulo":..., "subtitulo":..., "parte":..., "fases":[{"nombre":.
                 "tareas":[{"id":"t1","texto":"...","estado":"pendiente","nota":"...","peso":1}]}]}
 tareas.json -> la lista de tareas sola, con la misma forma.
 
+Una tarea de quien lee lleva además "quien":"tu", y puede traer "porque", "pasos":[...],
+"acciones":[{"texto":...,"url":...} o {"texto":...,"copiar":...}] y "dime".
+
 Toda orden que cambia algo escribe también <salida.html>.version.js: la pestaña abierta lo
 pide cada pocos segundos y se pone al día sola, sin pulsar F5.
 """
@@ -98,6 +101,9 @@ def numerar(fases):
         vistos.add(tid)
         if t.get("estado") not in ESTADOS:
             t["estado"] = "pendiente"
+        # Quien lee es "tu"; sin este campo, la tarea es del agente, como siempre.
+        if str(t.get("quien", "")).strip().lower() in ("tu", "tú"):
+            t["quien"] = "tu"
     return fases
 
 
@@ -325,8 +331,9 @@ def cmd_ver(ruta):
         print("\n[%s]" % fase.get("nombre", "Tareas"))
         for t in fase.get("tareas", []):
             nota = ("  (%s)" % t["nota"]) if t.get("nota") else ""
-            print("  %-6s %-11s %s%s" % (t.get("id", "?"), t.get("estado", "pendiente"),
-                                         t.get("texto", ""), nota))
+            quien = "tú: " if t.get("quien") == "tu" or t.get("decision") else ""
+            print("  %-6s %-11s %s%s%s" % (t.get("id", "?"), t.get("estado", "pendiente"),
+                                           quien, t.get("texto", ""), nota))
 
 
 # -------------------------------------------------------------------------- estado
