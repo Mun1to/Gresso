@@ -83,7 +83,7 @@ de dos maneras, di en `noHace` lo que no incluye. Cuando te conteste, ciérrala:
 `estado t3=hecho:"eligió el lunes"`.
 
 Lo `descartado` sale del total: no es trabajo que quede, y dejarlo contando hunde el porcentaje
-sin motivo. Se queda escrito y tachado, porque saber qué se decidió no hacer es información.
+sin motivo. Se queda escrito y tachado, al final con lo hecho, porque saber qué se decidió no hacer es información.
 
 ### 2. Una sola página por frente
 
@@ -197,6 +197,7 @@ interno, no se sube a un repositorio público.
 - **Lo parado va primero** en lo que hace el agente, con lo que falta para desbloquearlo.
 - **El estado es una palabra suelta en negrita** («Ahora», «Parado») y una casilla. Sin fichas, sin
   puntos de color, sin nada que lata y sin mini gráficos: la página no se explica a sí misma.
+- **Lo hecho, plegado y al final**, con su número: la pregunta de quien abre la página es qué falta.
 - **Letra de 17 px para arriba**, que crece en pantallas grandes, y nada por debajo de 16.
 - **La hora de la última novedad en la cabecera**, y el porcentaje también en el título de la
   pestaña. **Si el archivo lleva 90 minutos sin escribirse, lo dice en rojo** («lleva 2 h sin

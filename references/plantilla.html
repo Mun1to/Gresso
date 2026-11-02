@@ -87,6 +87,13 @@ input[type=checkbox]:checked::after { content:""; width:7px; height:13px; border
 textarea { display:block; width:100%; min-height:48px; margin-top:8px; padding:10px 12px; border:2px solid var(--linea); border-radius:8px; background:transparent; color:var(--tinta); font:inherit; resize:none; overflow:hidden; }
 textarea::placeholder { color:var(--suave); opacity:1; }
 .defecto { font-size:1rem; margin:8px 0 0 !important; }
+details.listo { margin-top:6px; }
+details.listo summary { cursor:pointer; font-family:var(--letra-titulos); font-weight:800; font-size:1.625rem; color:var(--tinta); list-style:none; display:flex; align-items:center; gap:12px; }
+details.listo summary::-webkit-details-marker { display:none; }
+details.listo summary::before { content:""; width:11px; height:11px; border:solid var(--tinta); border-width:0 3px 3px 0; transform:rotate(-45deg); transition:transform .18s ease; flex:none; }
+details.listo[open] summary::before { transform:translateY(-3px) rotate(45deg); }
+details.listo .dentro { margin-top:16px; }
+#listo { margin-top:32px; }
 @media (max-width:1000px) {
   .arriba, .columnas { grid-template-columns:minmax(0,1fr); }
   .mascota { width:72px; height:72px; }
@@ -366,7 +373,7 @@ textarea::placeholder { color:var(--suave); opacity:1; }
   // Lo que hace el agente: primero lo parado, luego por fases.
   var flujo = el("div", "flujo");
   var paradas = todas.filter(function(t){ return !deLaPersona(t) && t.estado === "bloqueado"; });
-  function enLista(t){ return !deLaPersona(t) && t.estado !== "bloqueado"; }
+  function enLista(t){ return !deLaPersona(t) && queda(t) && t.estado !== "bloqueado"; }
   if (paradas.length) {
     var secP = el("div", "fase");
     secP.appendChild(el("h3", "parado-cab", "Parado"));
@@ -439,10 +446,46 @@ textarea::placeholder { color:var(--suave); opacity:1; }
     caja.appendChild(filaYo);
   }
 
+  // Lo que ya está listo, plegado y al final: no es lo que hay que mirar.
+  var plegado = null;
+  function pintarListo(){
+    var caja = $("listo"), abierto = false;
+    try { abierto = plegado ? plegado.open : sessionStorage.getItem(CLAVE + ":listo") === "1"; } catch(_){}
+    caja.textContent = "";
+    var listas = todas.filter(hecha), fuera = todas.filter(function(t){ return t.estado === "descartado"; });
+    if (!listas.length && !fuera.length) { plegado = null; return; }
+    var det = el("details", "listo");
+    det.appendChild(el("summary", "", listas.length ? "Lo que ya está listo (" + listas.length + ")" : "Descartado (" + fuera.length + ")"));
+    var dentro = el("div", "dentro flujo siempre");
+    fases.forEach(function(f){
+      var aqui = (f.tareas || []).filter(hecha);
+      if (!aqui.length) return;
+      var sec = el("div", "fase");
+      sec.appendChild(el("h3", "", f.nombre || "Tareas"));
+      var ul = el("ul", "tareas");
+      aqui.forEach(function(t){ ul.appendChild(filaTarea(t)); });
+      sec.appendChild(ul);
+      dentro.appendChild(sec);
+    });
+    if (fuera.length) {
+      var secF = el("div", "fase");
+      if (listas.length) secF.appendChild(el("h3", "", "Descartado"));
+      var ulF = el("ul", "tareas");
+      fuera.forEach(function(t){ ulF.appendChild(filaTarea(t)); });
+      secF.appendChild(ulF);
+      dentro.appendChild(secF);
+    }
+    det.appendChild(dentro);
+    det.open = abierto;
+    det.addEventListener("toggle", function(){ try { sessionStorage.setItem(CLAVE + ":listo", det.open ? "1" : "0"); } catch(_){} });
+    caja.appendChild(det);
+    plegado = det;
+  }
 
   function refrescar(){
     pintarCifra();
     pintarSiguiente();
+    pintarListo();
     pintarSello();
   }
   refrescar();

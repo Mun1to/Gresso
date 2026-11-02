@@ -64,8 +64,8 @@ One HTML file, opened straight in your own browser, never a hosted page:
   never preselected, a box for your own answer, and a "copy answers" button to paste in the chat.
 - A short "where I am" note the agent keeps up to date, in two or three lines.
 - Tasks grouped in phases, each with its count.
-- Dropped tasks stay visible but crossed out, and do not count towards the total, so the
-  percentage never lies by keeping work that is no longer going to happen.
+- What is done is folded at the end, with its count: the question when you open the page is what
+  is left. Dropped tasks stay there crossed out, and do not count towards the total.
 - The time of the last update in the header, and the percentage in the tab title. If the file has
   not been written for 90 minutes, the header says so in red instead of pretending to be current.
 - Light or dark following your system, readable on a phone, no internet needed.
