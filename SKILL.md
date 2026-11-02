@@ -128,7 +128,8 @@ EOF
 
 Si la tubería da guerra (o el JSON es largo), escríbelo en un archivo y pásalo con
 `--datos archivo.json`, que vale igual en `crear` y en `anadir`. La entrada se lee en UTF-8, y si
-no lo es en cp1252, así que las tildes y las eñes llegan bien también en Windows.
+no lo es en cp1252, así que las tildes y las eñes llegan bien desde
+Git Bash. La tubería de PowerShell 5.1 las convierte en `?` antes de llegar y ya no se pueden recuperar: allí, `--datos` (el script avisa).
 
 El script imprime la ruta absoluta y nada más. **No abras la plantilla ni el HTML generado con
 las herramientas de leer archivo**: son cientos de líneas que no necesitas en el contexto, y

@@ -67,6 +67,13 @@ def decodificar(bruto):
     return bruto.decode("utf-8", errors="replace")
 
 
+def avisar_si_perdio_tildes(texto):
+    # PowerShell 5.1 convierte lo que no es ASCII en "?" ANTES de que llegue aquí, y ya no se puede recuperar.
+    if re.search(r"[^\W\d_]\?[^\W\d_]", texto) and "://" not in texto:
+        sys.stderr.write("gresso: aviso: hay un \"?\" entre dos letras: parece que la tubería se ha comido tildes o eñes. "
+                         "Escríbelo en un archivo y pásalo con --datos.\n")
+
+
 def leer_entrada(archivo=None):
     if archivo:
         if not os.path.exists(archivo):
@@ -76,6 +83,8 @@ def leer_entrada(archivo=None):
     else:
         bruto = sys.stdin.buffer.read()
     crudo = decodificar(bruto).strip()
+    if not archivo:
+        avisar_si_perdio_tildes(crudo)
     if not crudo:
         muere("no llegaron datos: pásalos por la entrada estándar o con --datos archivo.json")
     try:
