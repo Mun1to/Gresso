@@ -7,6 +7,12 @@
     python gresso.py estado <salida.html> t3=hecho t4=haciendo "t5=bloqueado:falta la clave"
     python gresso.py parte  <salida.html> "Dónde voy, en dos o tres líneas"
     python gresso.py anadir <salida.html> --fase "Nombre de la fase"      < tareas.json
+    python gresso.py renovar <salida.html> [--marca marca.json]
+
+crear y renovar admiten --marca marca.json: {"nombre":...,"logo":...,"logoOscuro":...,
+"mascota":...,"pixelada":true,"colores":{"acento":"#3E5BA9",...},"oscuro":{...},"letra":...,
+"letraTitulos":...}. Logo y mascota son un archivo, un <svg> o un data:, y quedan dentro de la
+página. renovar pasa una página a la plantilla actual sin perder datos y deja copia en .bak.
 
 En crear y anadir, --datos archivo.json sustituye a la entrada estándar. La entrada se lee
 en UTF-8 y, si no lo es, en cp1252, así que los acentos llegan bien desde Git Bash y PowerShell.
@@ -24,7 +30,10 @@ Toda orden que cambia algo escribe también <salida.html>.version.js: la pestañ
 pide cada pocos segundos y se pone al día sola, sin pulsar F5.
 """
 
+import base64
+import html as escape_html
 import json
+import mimetypes
 import os
 import re
 import sys
@@ -282,9 +291,50 @@ def copia_si_existe(ruta):
     sys.stderr.write("gresso: aviso: %s ya existía; lo anterior queda en %s.bak\n" % (ruta, ruta))
 
 
+# --------------------------------------------------------------------------- marca
+def imagen_en_linea(valor, carpeta):
+    """Convierte un archivo o un <svg> en data:, para que la página siga siendo un solo archivo."""
+    valor = str(valor).strip()
+    if valor.startswith("data:image/"):
+        return valor
+    if valor.startswith("<"):
+        crudo, tipo = valor.encode("utf-8"), "image/svg+xml"
+    else:
+        ruta = valor if os.path.isabs(valor) else os.path.join(carpeta, valor)
+        if not os.path.exists(ruta):
+            muere("la marca apunta a una imagen que no existe: %s" % ruta)
+        with open(ruta, "rb") as f:
+            crudo = f.read()
+        tipo = mimetypes.guess_type(ruta)[0]
+        if not tipo or not tipo.startswith("image/"):
+            muere("eso no parece una imagen: %s" % ruta)
+    return "data:%s;base64,%s" % (tipo, base64.b64encode(crudo).decode("ascii"))
+
+
+def preparar_marca(marca, carpeta):
+    if not isinstance(marca, dict):
+        muere("la marca tiene que ser un objeto JSON")
+    for campo in ("logo", "logoOscuro", "mascota", "mascotaOscura"):
+        if marca.get(campo):
+            marca[campo] = imagen_en_linea(marca[campo], carpeta)
+    return marca
+
+
+def leer_marca(archivo):
+    return preparar_marca(leer_entrada(archivo), os.path.dirname(os.path.abspath(archivo)))
+
+
+def cargar_plantilla(origen, titulo):
+    origen = origen or plantilla_por_defecto()
+    if not os.path.exists(origen):
+        muere("no encuentro la plantilla en %s" % origen)
+    with open(origen, encoding="utf-8") as f:
+        return f.read().replace("__TITULO__", escape_html.escape(titulo))
+
+
 # --------------------------------------------------------------------------- crear
 def cmd_crear(ruta, resto):
-    titulo = subtitulo = plantilla = archivo = proyecto = None
+    titulo = subtitulo = plantilla = archivo = proyecto = marca = None
     i = 0
     while i < len(resto):
         if resto[i] == "--datos" and i + 1 < len(resto):
@@ -297,6 +347,8 @@ def cmd_crear(ruta, resto):
             plantilla = resto[i + 1]; i += 2
         elif resto[i] == "--proyecto" and i + 1 < len(resto):
             proyecto = resto[i + 1]; i += 2
+        elif resto[i] == "--marca" and i + 1 < len(resto):
+            marca = resto[i + 1]; i += 2
         else:
             i += 1
 
@@ -308,12 +360,11 @@ def cmd_crear(ruta, resto):
     datos.setdefault("titulo", "Seguimiento")
     datos["fases"] = numerar(datos.get("fases", []))
 
-    origen = plantilla or plantilla_por_defecto()
-    if not os.path.exists(origen):
-        muere("no encuentro la plantilla en %s" % origen)
-    with open(origen, encoding="utf-8") as f:
-        html = f.read()
-    html = html.replace("__TITULO__", datos["titulo"])
+    if marca:
+        datos["marca"] = leer_marca(marca)
+    elif datos.get("marca"):
+        datos["marca"] = preparar_marca(datos["marca"], os.getcwd())
+    html = cargar_plantilla(plantilla, datos["titulo"])
 
     carpeta = os.path.dirname(os.path.abspath(ruta))
     if carpeta and not os.path.isdir(carpeta):
@@ -419,6 +470,25 @@ def cmd_anadir(ruta, resto):
     print("%d tarea(s) añadida(s) | %d%% (%d de %d)" % (len(nuevas), pct, len(hechas), len(utiles)))
 
 
+# ------------------------------------------------------------------------- renovar
+def cmd_renovar(ruta, resto):
+    plantilla = marca = None
+    i = 0
+    while i < len(resto):
+        if resto[i] == "--marca" and i + 1 < len(resto):
+            marca = resto[i + 1]; i += 2
+        elif resto[i] == "--plantilla" and i + 1 < len(resto):
+            plantilla = resto[i + 1]; i += 2
+        else:
+            i += 1
+    _, datos = extraer(ruta)
+    if marca:
+        datos["marca"] = leer_marca(marca)
+    html = cargar_plantilla(plantilla, datos.get("titulo", "Seguimiento"))
+    copia_si_existe(ruta)
+    guardar(ruta, html, datos)
+
+
 def main():
     for flujo in (sys.stdout, sys.stderr):
         try:
@@ -441,8 +511,10 @@ def main():
         cmd_parte(ruta, " ".join(resto))
     elif orden == "anadir":
         cmd_anadir(ruta, resto)
+    elif orden == "renovar":
+        cmd_renovar(ruta, resto)
     else:
-        muere('orden desconocida "%s" (crear, ver, estado, parte, anadir)' % orden)
+        muere('orden desconocida "%s" (crear, ver, estado, parte, anadir, renovar)' % orden)
 
 
 if __name__ == "__main__":

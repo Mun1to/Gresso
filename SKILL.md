@@ -202,6 +202,37 @@ interno, no se sube a un repositorio público.
   la pestaña, para verlo sin cambiar de ventana.
 - **Se pone al día sola y no te mueve de sitio**: conserva el scroll al recargar.
 
+## La marca del proyecto
+
+Sin marca, la página usa una paleta neutra. Con `--marca` lleva el logo, la mascota, los colores y la
+letra del proyecto, **sin tocar el HTML**:
+
+```bash
+python3 "$GRESSO" crear "<ruta>" --marca marca.json --datos datos.json
+```
+
+```json
+{"nombre": "Mi proyecto", "logo": "logo.svg", "logoOscuro": "logo-claro.svg",
+ "mascota": "mascota.png", "pixelada": false,
+ "colores": {"acento": "#3E5BA9", "fondo": "#FAF9F6", "tinta": "#101A3D"},
+ "oscuro": {"fondo": "#0E1116", "tinta": "#EEF1F8"},
+ "letra": "Inter", "letraTitulos": "Montserrat"}
+```
+
+Todo es opcional. Las imágenes son un archivo (relativo al JSON), un `<svg>` o un `data:`, y quedan
+dentro de la página, que sigue siendo un solo archivo. Colores: `fondo`, `tarjeta`, `tinta`, `texto`,
+`suave`, `acento`, `acentoTexto`, `sobreAcento`, `botonSuave`, `botonSuaveTexto`, `linea`, `caja`,
+`exito`, `alerta` y `fondoBarra`. La letra tiene que estar instalada: la página no descarga nada.
+
+Para pasar una página ya creada a la plantilla actual, o cambiarle la marca, sin perder nada:
+
+```bash
+python3 "$GRESSO" renovar "<ruta>" --marca marca.json
+```
+
+Conserva las tareas y sus ids, deja una copia en `<ruta>.bak`, y la pestaña abierta se pone al día sola
+sin perder lo marcado.
+
 ## Archivos
 
 - `references/plantilla.html` - la página. Se copia, no se edita a mano.

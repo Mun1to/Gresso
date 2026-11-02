@@ -73,6 +73,10 @@ One HTML file, opened straight in your own browser, never a hosted page:
   the page, the open tab asks for it every 5 seconds and reloads only if it changed. No changes,
   no reload. It keeps your scroll position and waits while you are typing or selecting text.
 
+- A neutral palette by default, or your project's logo, mascot, colours and font with
+  `--marca brand.json`, without touching the HTML. `renovar` moves an existing page to the current
+  template without losing anything.
+
 The page labels are in Spanish. The task text is whatever language the agent writes it in.
 
 ## One page per front
@@ -87,7 +91,8 @@ anywhere). Set `GRESSO_REGISTRO` to keep it somewhere else.
 
 The page carries its data in a JSON block, and a small script (`scripts/gresso.py`) rewrites
 only that block: `crear` (create), `estado` (change states), `parte` (the "where I am" note),
-`anadir` (add tasks) and `ver` (print the current state as text). The agent never loads the
+`anadir` (add tasks), `ver` (print the current state as text) and `renovar` (move a page to the
+current template). The agent never loads the
 HTML into its context to update it, so keeping the page current costs almost nothing.
 
 Task ids never change once given, even when new tasks are added in the middle, so the agent

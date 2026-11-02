@@ -157,6 +157,45 @@ textarea::placeholder { color:var(--suave); opacity:1; }
   }
   function rico(tag, clase, html){ var e = el(tag, clase); limpia(new DOMParser().parseFromString(String(html), "text/html").body, e); return e; }
 
+  // La marca del proyecto llega como datos: logo, mascota, colores y letra. Sin ella, la paleta neutra.
+  var M = D.marca || {};
+  var NOMBRES = {fondo:"--bg", tarjeta:"--card", tinta:"--tinta", texto:"--texto", suave:"--suave", acento:"--acento", acentoTexto:"--acento-texto", sobreAcento:"--sobre-acento", botonSuave:"--boton-suave", botonSuaveTexto:"--boton-suave-texto", linea:"--linea", caja:"--caja", exito:"--verde", alerta:"--rojo", fondoBarra:"--fondo-barra"};
+  function reglas(colores){
+    var r = "";
+    for (var k in colores) if (NOMBRES[k] && /^[#\w(),.%\s-]+$/.test(String(colores[k]))) r += NOMBRES[k] + ":" + colores[k] + ";";
+    return r;
+  }
+  function sobre(hex){
+    var m = /^#([0-9a-f]{6})$/i.exec(String(hex || ""));
+    if (!m) return null;
+    var n = parseInt(m[1], 16), lum = [n >> 16, n >> 8 & 255, n & 255].map(function(c){ c /= 255; return c <= .03928 ? c / 12.92 : Math.pow((c + .055) / 1.055, 2.4); });
+    return .2126 * lum[0] + .7152 * lum[1] + .0722 * lum[2] > .4 ? "#15181E" : "#FFFFFF";
+  }
+  (function(){
+    var c = M.colores || {}, o = M.oscuro || {};
+    // El acento y la letra valen en los dos temas; el resto de colores claros, solo en el claro.
+    var comun = reglas({acento:c.acento}), claro = reglas(c), osc = reglas(o);
+    if (c.acento && !c.acentoTexto) claro += "--acento-texto:" + c.acento + ";";
+    if (c.acento && sobre(c.acento) && !c.sobreAcento) comun += "--sobre-acento:" + sobre(c.acento) + ";";
+    if (M.letra) comun += "--letra:" + String(M.letra).replace(/[;{}]/g, "") + ",system-ui,sans-serif;";
+    if (M.letraTitulos) comun += "--letra-titulos:" + String(M.letraTitulos).replace(/[;{}]/g, "") + ",system-ui,sans-serif;";
+    if (c.acento && !o.acentoTexto) osc += "--acento-texto:" + (o.acento || "color-mix(in srgb, " + c.acento + " 58%, white)") + ";";
+    if (o.acento && sobre(o.acento) && !o.sobreAcento) osc += "--sobre-acento:" + sobre(o.acento) + ";";
+    var st = document.createElement("style");
+    st.textContent = ":root{" + comun + "}@media (prefers-color-scheme: light){:root{" + claro + "}}@media (prefers-color-scheme: dark){:root{" + osc + "}}";
+    document.head.appendChild(st);
+    function imagen(id, claro, oscuro, alt){
+      var img = $(id);
+      if (!/^data:image\//.test(claro || "")) return;
+      var mq = window.matchMedia("(prefers-color-scheme: dark)");
+      function poner(){ img.src = mq.matches && oscuro ? oscuro : claro; }
+      poner(); img.hidden = false; img.alt = alt || "";
+      if (oscuro && mq.addEventListener) mq.addEventListener("change", poner);
+    }
+    imagen("logo", M.logo, M.logoOscuro, M.nombre);
+    imagen("mascota", M.mascota, M.mascotaOscura, "");
+    if (M.pixelada) $("mascota").classList.add("pixelada");
+  })();
 
   var fases = D.fases || [], todas = [];
   fases.forEach(function(f){ (f.tareas || []).forEach(function(t){ todas.push(t); }); });
