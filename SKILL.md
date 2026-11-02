@@ -153,21 +153,16 @@ interno, no se sube a un repositorio público.
 ## Lo que ya trae la plantilla, y no hay que tocar
 
 - **Un solo archivo, cero CDN.** Tiene que verse igual sin internet.
-- **Tema del sistema sin botón**, claro u oscuro por `prefers-color-scheme`, y legible en el
-  móvil (la barra deja de ir pegada arriba en pantallas estrechas para no taparlo todo).
-- **Barra de progreso en tres tramos**: hecho en verde, en curso en azul, bloqueado en rojo.
-  De un vistazo se ve si lo que falta está parado o en marcha.
-- **Porcentaje grande, y las tareas que quedan en número**, que es la pregunta de verdad.
-- **Los bloqueos suben arriba del todo**, en su propia caja, antes que ninguna tarea.
-- **Mini barra por fase**, con su propio `hechas/total` y su porcentaje.
+- **Tema del sistema sin botón**, claro u oscuro por `prefers-color-scheme`, y legible en el móvil.
+- **La cifra grande del porcentaje, una barra de un solo color y una frase**: «31 de 60 tareas
+  hechas. Quedan 29.», que es la pregunta de verdad.
+- **Lo parado va primero** en lo que hace el agente, con lo que falta para desbloquearlo.
+- **El estado es una palabra suelta en negrita** («Ahora», «Parado») y una casilla. Sin fichas, sin
+  puntos de color, sin nada que lata y sin mini gráficos: la página no se explica a sí misma.
+- **Letra de 17 px para arriba**, que crece en pantallas grandes, y nada por debajo de 16.
 - **La hora de la última actualización en la cabecera**, y el porcentaje también en el título de
   la pestaña, para verlo sin cambiar de ventana.
 - **Se pone al día sola y no te mueve de sitio**: conserva el scroll al recargar.
-
-Si el proyecto donde trabajas tiene su propio sistema de diseño, cambia los valores del bloque
-`PALETA` de la plantilla (los `--bg`, `--acento`, `--radio`, la tipografía) con un `replace` de
-una pasada. El bloque `ESTRUCTURA` de debajo **no se toca nunca**: todo va por `var()`, así que
-hereda el cambio de piel solo.
 
 ## Archivos
 

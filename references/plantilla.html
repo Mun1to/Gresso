@@ -5,338 +5,281 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>__TITULO__</title>
 <style>
-/* ===== PALETA (es lo único que se cambia para adaptar al proyecto) ===== */
-:root{
-  --bg:#f7f7f8;
-  --panel:#ffffff;
-  --borde:#e3e3e7;
-  --texto:#1a1a1e;
-  --suave:#62626c;
-  --acento:#3b5bdb;
-  --hecho:#2f9e44;
-  --haciendo:#1971c2;
-  --pendiente:#868e96;
-  --bloqueado:#e03131;
-  --descartado:#adb5bd;
-  --radio:14px;
-  --fuente:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-}
-@media (prefers-color-scheme:dark){
-  :root{
-    --bg:#111114;
-    --panel:#1a1a1f;
-    --borde:#2c2c33;
-    --texto:#f1f1f3;
-    --suave:#9b9ba5;
-    --acento:#748ffc;
-    --hecho:#51cf66;
-    --haciendo:#4dabf7;
-    --pendiente:#868e96;
-    --bloqueado:#ff6b6b;
-    --descartado:#5c5c66;
-  }
-}
-/* ===== ESTRUCTURA (no se toca: todo va por var()) ===== */
-*{box-sizing:border-box}
-body{
-  margin:0;background:var(--bg);color:var(--texto);
-  font-family:var(--fuente);line-height:1.5;
-  padding:24px 16px 72px;
-}
-.envoltura{max-width:860px;margin:0 auto}
-header{margin-bottom:20px}
-h1{font-size:clamp(1.35rem,4vw,1.9rem);margin:0 0 6px;letter-spacing:-.01em}
-.subtitulo{color:var(--suave);margin:0 0 10px;font-size:.98rem}
-.sello{
-  display:inline-flex;align-items:center;gap:8px;
-  font-size:.82rem;color:var(--suave);
-  background:var(--panel);border:1px solid var(--borde);
-  border-radius:999px;padding:5px 12px;
-}
-.sello b{color:var(--texto);font-weight:600}
-.latido{width:7px;height:7px;border-radius:50%;background:var(--acento);flex:none}
-
-.resumen{
-  position:sticky;top:0;z-index:5;
-  background:var(--panel);border:1px solid var(--borde);border-radius:var(--radio);
-  padding:16px;margin:18px 0 22px;
-}
-.cifra{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}
-.porcentaje{font-size:2.1rem;font-weight:700;letter-spacing:-.02em;line-height:1}
-.de-cuantas{color:var(--suave);font-size:.95rem}
-.barra{height:12px;border-radius:999px;background:var(--bg);overflow:hidden;display:flex;border:1px solid var(--borde)}
-.barra i{display:block;height:100%;transition:width .25s ease}
-.barra .b-hecho{background:var(--hecho)}
-.barra .b-haciendo{background:var(--haciendo)}
-.barra .b-bloqueado{background:var(--bloqueado)}
-.fichas{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.ficha{
-  display:inline-flex;align-items:center;gap:7px;font-size:.84rem;
-  border:1px solid var(--borde);border-radius:999px;padding:4px 11px;color:var(--suave);
-}
-.ficha b{color:var(--texto);font-weight:600}
-.punto{width:9px;height:9px;border-radius:50%;flex:none}
-.p-hecho{background:var(--hecho)}
-.p-haciendo{background:var(--haciendo)}
-.p-pendiente{background:var(--pendiente)}
-.p-bloqueado{background:var(--bloqueado)}
-.p-descartado{background:var(--descartado)}
-
-.aviso{
-  border:1px solid var(--bloqueado);border-left-width:4px;border-radius:var(--radio);
-  background:var(--panel);padding:14px 16px;margin-bottom:20px;
-}
-.aviso h2{margin:0 0 8px;font-size:.95rem;color:var(--bloqueado);letter-spacing:.02em;text-transform:uppercase}
-.aviso ul{margin:0;padding-left:20px}
-.aviso li{margin:4px 0}
-
-.parte{
-  background:var(--panel);border:1px solid var(--borde);border-radius:var(--radio);
-  padding:14px 16px;margin-bottom:22px;color:var(--texto);
-}
-.parte h2{margin:0 0 6px;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--suave)}
-.parte p{margin:0 0 8px}
-.parte p:last-child{margin-bottom:0}
-
-.fase{margin-bottom:22px}
-.fase-cab{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
-.fase-cab h2{margin:0;font-size:1.02rem}
-.fase-cuenta{color:var(--suave);font-size:.85rem;white-space:nowrap}
-.mini{height:5px;border-radius:999px;background:var(--borde);overflow:hidden;margin-bottom:10px}
-.mini i{display:block;height:100%;background:var(--hecho)}
-
-ul.tareas{list-style:none;margin:0;padding:0;display:grid;gap:8px}
-li.tarea{
-  display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;
-  background:var(--panel);border:1px solid var(--borde);border-radius:11px;padding:11px 13px;
-}
-li.tarea .marca{
-  width:18px;height:18px;border-radius:50%;flex:none;margin-top:2px;
-  border:2px solid var(--pendiente);display:grid;place-items:center;
-}
-li.tarea.hecho .marca{border-color:var(--hecho);background:var(--hecho)}
-li.tarea.hecho .marca::after{content:"";width:5px;height:9px;border:solid var(--panel);border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
-li.tarea.haciendo .marca{border-color:var(--haciendo)}
-li.tarea.haciendo .marca::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--haciendo)}
-li.tarea.bloqueado .marca{border-color:var(--bloqueado)}
-li.tarea.bloqueado .marca::after{content:"";width:2px;height:10px;background:var(--bloqueado);border-radius:1px}
-li.tarea.descartado{opacity:.55}
-li.tarea.descartado .texto{text-decoration:line-through}
-li.tarea.hecho .texto{color:var(--suave)}
-.texto{font-size:.97rem}
-.nota{display:block;color:var(--suave);font-size:.85rem;margin-top:3px}
-.etiqueta{
-  display:inline-block;font-size:.72rem;border-radius:999px;padding:1px 8px;margin-left:6px;
-  border:1px solid var(--borde);color:var(--suave);vertical-align:middle;
-}
-li.tarea.haciendo .etiqueta{color:var(--haciendo);border-color:var(--haciendo)}
-li.tarea.bloqueado .etiqueta{color:var(--bloqueado);border-color:var(--bloqueado)}
-
-footer{margin-top:28px;color:var(--suave);font-size:.84rem;text-align:center}
-footer code{background:var(--panel);border:1px solid var(--borde);border-radius:6px;padding:1px 6px}
-.vacio{color:var(--suave);font-style:italic}
-@media (max-width:520px){
-  .resumen{position:static}
-  .porcentaje{font-size:1.8rem}
+:root { color-scheme:light dark; --bg:#F7F7F5; --card:#FFFFFF; --tinta:#15181E; --texto:#333843; --suave:#565B66; --acento:#2F5FB8; --acento-texto:#2F5FB8; --sobre-acento:#FFFFFF; --boton-suave:#E6E9F0; --boton-suave-texto:#15181E; --linea:#DEDDD8; --caja:#A3A39D; --verde:#2B8A57; --rojo:#C8372D; --fondo-barra:#E6E5E0; --letra:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; --letra-titulos:var(--letra); }
+@media (prefers-color-scheme: dark) { :root { --bg:#111318; --card:#181B22; --tinta:#F2F3F5; --texto:#D2D5DB; --suave:#A9AEB8; --acento-texto:#9DB8F0; --boton-suave:#252A35; --boton-suave-texto:#F2F3F5; --linea:#2C313C; --caja:#666C79; --verde:#4FB37C; --rojo:#F0837A; --fondo-barra:#252A35; } }
+* { box-sizing:border-box; }
+[hidden] { display:none !important; }
+html { -webkit-text-size-adjust:100%; font-size:clamp(16px, calc(8px + .55vw), 20px); }
+body { margin:0; background:var(--bg); color:var(--texto); font:400 1.0625rem/1.55 var(--letra); }
+.hoja { width:min(1760px,100%); margin:0 auto; padding:28px clamp(16px,4vw,64px) 72px; }
+h1,h2,h3 { font-family:var(--letra-titulos); color:var(--tinta); line-height:1.2; margin:0; }
+h1 { font-size:clamp(2rem,3.4vw,3rem); font-weight:800; }
+h2 { font-size:1.625rem; font-weight:800; margin:0 0 16px; }
+h3 { font-size:1.1875rem; font-weight:700; }
+strong { color:var(--tinta); font-weight:700; }
+code { font-size:.94em; }
+a { color:var(--acento-texto); }
+.cab { display:flex; align-items:center; justify-content:space-between; gap:24px; }
+.logo { display:block; height:52px; width:auto; max-width:100%; margin-bottom:14px; }
+.mascota { display:block; width:92px; height:92px; object-fit:contain; flex:none; }
+.mascota.pixelada { image-rendering:pixelated; }
+.sub { margin:8px 0 0; }
+.sello { color:var(--suave); margin:8px 0 0; }
+.sello.parada { color:var(--rojo); font-weight:600; }
+.arriba { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:clamp(24px,4vw,72px); margin-top:28px; align-items:start; }
+.fila-sig { display:grid; grid-template-columns:3.2rem minmax(0,1fr); gap:4px 12px; margin:0 0 16px; }
+.fila-sig b { font-family:var(--letra-titulos); font-weight:800; color:var(--tinta); font-size:1.1875rem; line-height:1.4; }
+.fila-sig .que { color:var(--tinta); font-size:1.1875rem; line-height:1.4; font-weight:600; }
+.fila-sig .como { grid-column:2; }
+.fila-sig .boton { grid-column:2; justify-self:start; margin-top:6px; }
+.cifra { font-family:var(--letra-titulos); font-weight:800; font-size:clamp(3.25rem,5vw,4.5rem); line-height:1; color:var(--tinta); }
+.cifra-texto { color:var(--tinta); font-weight:600; margin:6px 0 12px; }
+.barra { height:12px; border-radius:6px; background:var(--fondo-barra); overflow:hidden; }
+.barra i { display:block; height:100%; background:var(--acento-texto); transition:width .4s ease; }
+.columnas { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); gap:clamp(32px,4vw,72px); margin-top:44px; align-items:start; }
+.columnas.sola { grid-template-columns:minmax(0,1fr); }
+.columnas > div:empty { display:none; }
+.seccion:empty { display:none; }
+.seccion + .seccion:not(:empty) { margin-top:44px; }
+.flujo { column-gap:clamp(32px,4vw,72px); }
+.flujo > * { break-inside:avoid; }
+.sola .flujo, .flujo.siempre { columns:2 420px; }
+.sola .flujo.una { columns:auto; }
+.sola .flujo.una .tareas { columns:2 420px; column-gap:clamp(32px,4vw,72px); }
+.sola .flujo.una .tarea { break-inside:avoid; }
+.fase { margin:0 0 26px; }
+.fase-cab { display:flex; justify-content:space-between; align-items:baseline; gap:16px; margin:0 0 8px; }
+.fase-cab span { color:var(--suave); white-space:nowrap; }
+.parado-cab { color:var(--rojo); }
+.tareas { list-style:none; margin:0; padding:0; }
+.tarea { display:grid; grid-template-columns:26px minmax(0,1fr); gap:0 12px; padding:9px 0; }
+.casilla { width:26px; height:26px; border:2px solid var(--caja); border-radius:5px; display:grid; place-items:center; }
+.tarea.hecho .casilla { background:var(--verde); border-color:var(--verde); }
+.tarea.hecho .casilla::after { content:""; width:7px; height:13px; border:solid #fff; border-width:0 3px 3px 0; transform:translateY(-2px) rotate(45deg); }
+.tarea.haciendo .casilla { border-color:var(--acento-texto); }
+.tarea.bloqueado .casilla { border-color:var(--rojo); }
+.tarea .texto { color:var(--tinta); }
+.tarea.descartado .texto { text-decoration:line-through; color:var(--suave); }
+.nota { display:block; font-size:1rem; color:var(--suave); }
+.estado-palabra { font-weight:700; color:var(--acento-texto); }
+.estado-palabra.parado { color:var(--rojo); }
+@media (max-width:1000px) {
+  .arriba, .columnas { grid-template-columns:minmax(0,1fr); }
+  .mascota { width:72px; height:72px; }
+  .logo { height:44px; }
 }
 </style>
 </head>
 <body>
-<div class="envoltura">
-  <header>
-    <h1 id="titulo">__TITULO__</h1>
-    <p class="subtitulo" id="subtitulo"></p>
-    <span class="sello"><span class="latido"></span>Actualizado <b id="sello-fecha"></b></span>
+<div class="hoja">
+  <header class="cab">
+    <div>
+      <img class="logo" id="logo" alt="" hidden>
+      <h1 id="titulo"></h1>
+      <p class="sub" id="subtitulo" hidden></p>
+      <p class="sello" id="sello"></p>
+    </div>
+    <img class="mascota" id="mascota" alt="" hidden>
   </header>
 
-  <section class="resumen" aria-label="Progreso general">
-    <div class="cifra">
-      <span class="porcentaje" id="porcentaje">0%</span>
-      <span class="de-cuantas" id="de-cuantas"></span>
-    </div>
-    <div class="barra" id="barra" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
-    <div class="fichas" id="fichas"></div>
-  </section>
+  <div class="arriba">
+    <section id="siguiente"></section>
+    <section aria-label="Progreso">
+      <div class="cifra" id="cifra"></div>
+      <p class="cifra-texto" id="cifra-texto"></p>
+      <div class="barra" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="barra"><i id="barra-i"></i></div>
+    </section>
+  </div>
 
-  <div id="bloqueos"></div>
-  <div id="parte"></div>
-  <main id="fases"></main>
-
-  <footer>Pulsa <code>F5</code> para ver lo último. La página no se mueve sola.</footer>
+  <div class="columnas sola" id="columnas">
+    <div id="col-tu"><section class="seccion" id="decidir"></section><section class="seccion" id="toca"></section></div>
+    <div id="col-yo"><section class="seccion" id="hago"></section></div>
+  </div>
+  <section id="listo"></section>
 </div>
 
 <script id="gresso-datos" type="application/json">__DATOS_JSON__</script>
 <script>
 (function(){
   var D = JSON.parse(document.getElementById("gresso-datos").textContent);
-  var ESTADOS = ["hecho","haciendo","pendiente","bloqueado","descartado"];
-  var NOMBRES = {hecho:"hechas",haciendo:"en curso",pendiente:"pendientes",bloqueado:"bloqueadas",descartado:"descartadas"};
+  var CLAVE = "gresso:" + location.pathname;
+  function leer(k, def){
+    try {
+      var v = localStorage.getItem(CLAVE + ":" + k);
+      // Una página pasada de otra plantilla conserva lo marcado: se busca la misma ruta con otro prefijo.
+      if (v === null) for (var i = 0; i < localStorage.length; i++) {
+        var nombre = localStorage.key(i), fin = ":" + location.pathname + ":" + k;
+        if (nombre.slice(-fin.length) === fin) { v = localStorage.getItem(nombre); break; }
+      }
+      return v === null ? def : JSON.parse(v);
+    } catch(_){ return def; }
+  }
+  function guardar(k, v){ try { localStorage.setItem(CLAVE + ":" + k, JSON.stringify(v)); } catch(_){} }
+  var marcas = leer("marcas", {}), respuestas = leer("respuestas", {});
+  function el(tag, clase, txt){ var e = document.createElement(tag); if (clase) e.className = clase; if (txt !== undefined) e.textContent = txt; return e; }
+  function $(id){ return document.getElementById(id); }
 
-  function texto(el, v){ el.textContent = v || ""; }
+  // Los textos largos admiten negrita, cursiva, código, saltos y enlaces. Nada más se interpreta.
+  var PERMITIDAS = {STRONG:1, B:1, EM:1, I:1, CODE:1, BR:1, A:1};
+  function limpia(origen, destino){
+    Array.prototype.forEach.call(origen.childNodes, function(n){
+      if (n.nodeType === 3) { destino.appendChild(document.createTextNode(n.nodeValue)); return; }
+      if (n.nodeType !== 1) return;
+      if (!PERMITIDAS[n.tagName]) { limpia(n, destino); return; }
+      var e = document.createElement(n.tagName);
+      if (n.tagName === "A") { var h = n.getAttribute("href") || ""; if (/^(https?:|mailto:|file:)/i.test(h)) { e.href = h; e.target = "_blank"; e.rel = "noopener"; } }
+      limpia(n, e); destino.appendChild(e);
+    });
+  }
+  function rico(tag, clase, html){ var e = el(tag, clase); limpia(new DOMParser().parseFromString(String(html), "text/html").body, e); return e; }
+
+
+  var fases = D.fases || [], todas = [];
+  fases.forEach(function(f){ (f.tareas || []).forEach(function(t){ todas.push(t); }); });
+  function deLaPersona(){ return false; }
+  function marcada(){ return false; }
+  function hecha(t){ return t.estado === "hecho" || marcada(t); }
+  function queda(t){ return !hecha(t) && t.estado !== "descartado"; }
   function peso(t){ return typeof t.peso === "number" && t.peso > 0 ? t.peso : 1; }
+  function plural(n, uno, varios){ return n === 1 ? uno : varios; }
 
-  var fases = D.fases || [];
-  var todas = [];
-  fases.forEach(function(f){ (f.tareas||[]).forEach(function(t){ todas.push(t); }); });
-
-  var cuenta = {}; ESTADOS.forEach(function(e){ cuenta[e] = 0; });
-  var pesoTotal = 0, pesoHecho = 0, pesoHaciendo = 0, pesoBloqueado = 0;
-  todas.forEach(function(t){
-    var e = ESTADOS.indexOf(t.estado) >= 0 ? t.estado : "pendiente";
-    cuenta[e] += 1;
-    if (e === "descartado") return;          // lo descartado sale del total: no es trabajo que quede
-    pesoTotal += peso(t);
-    if (e === "hecho") pesoHecho += peso(t);
-    if (e === "haciendo") pesoHaciendo += peso(t);
-    if (e === "bloqueado") pesoBloqueado += peso(t);
-  });
-
-  var pct = pesoTotal ? Math.round(pesoHecho / pesoTotal * 100) : 0;
-  document.title = pct + "% " + (D.titulo || "Seguimiento");
-  texto(document.getElementById("titulo"), D.titulo || "Seguimiento");
-  texto(document.getElementById("subtitulo"), D.subtitulo);
-  texto(document.getElementById("sello-fecha"), D.actualizado || "sin fecha");
-  texto(document.getElementById("porcentaje"), pct + "%");
-
-  var hechas = cuenta.hecho, totalCuenta = todas.length - cuenta.descartado;
-  texto(document.getElementById("de-cuantas"),
-        hechas + " de " + totalCuenta + " tareas" + (totalCuenta - hechas ? ", quedan " + (totalCuenta - hechas) : ""));
-
-  var barra = document.getElementById("barra");
-  barra.setAttribute("aria-valuenow", String(pct));
-  function tramo(clase, p){
-    if (!p) return;
-    var i = document.createElement("i");
-    i.className = clase;
-    i.style.width = (p / pesoTotal * 100) + "%";
-    barra.appendChild(i);
-  }
-  tramo("b-hecho", pesoHecho); tramo("b-haciendo", pesoHaciendo); tramo("b-bloqueado", pesoBloqueado);
-
-  var fichas = document.getElementById("fichas");
-  ESTADOS.forEach(function(e){
-    if (!cuenta[e]) return;
-    var s = document.createElement("span");
-    s.className = "ficha";
-    s.innerHTML = '<span class="punto p-' + e + '"></span><b>' + cuenta[e] + '</b> ' + NOMBRES[e];
-    fichas.appendChild(s);
-  });
-
-  var bloqueadas = todas.filter(function(t){ return t.estado === "bloqueado"; });
-  if (bloqueadas.length){
-    var caja = document.createElement("section");
-    caja.className = "aviso";
-    var h = document.createElement("h2");
-    h.textContent = bloqueadas.length === 1 ? "Bloqueado" : "Bloqueados";
-    caja.appendChild(h);
-    var ul = document.createElement("ul");
-    bloqueadas.forEach(function(t){
-      var li = document.createElement("li");
-      li.textContent = t.texto + (t.nota ? ": " + t.nota : "");
-      ul.appendChild(li);
-    });
-    caja.appendChild(ul);
-    document.getElementById("bloqueos").appendChild(caja);
+  var pct = 0;
+  function pintarCifra(){
+    var utiles = todas.filter(function(t){ return t.estado !== "descartado"; });
+    var total = utiles.reduce(function(s, t){ return s + peso(t); }, 0);
+    var hecho = utiles.filter(hecha).reduce(function(s, t){ return s + peso(t); }, 0);
+    var n = utiles.filter(hecha).length, resto = utiles.length - n;
+    pct = total ? Math.round(hecho / total * 100) : 0;
+    if (resto && pct > 99) pct = 99;
+    document.title = pct + " % " + (D.titulo || "Seguimiento");
+    $("cifra").textContent = pct + " %";
+    $("cifra-texto").textContent = utiles.length
+      ? n + " de " + utiles.length + plural(utiles.length, " tarea hecha", " tareas hechas") + (resto ? ". " + plural(resto, "Queda 1", "Quedan " + resto) + "." : ".")
+      : "Todavía no hay tareas.";
+    $("barra").setAttribute("aria-valuenow", String(pct));
+    $("barra-i").style.width = pct + "%";
   }
 
-  if (D.parte){
-    var p = document.createElement("section");
-    p.className = "parte";
-    var ph = document.createElement("h2");
-    ph.textContent = "Dónde voy";
-    p.appendChild(ph);
-    String(D.parte).split("\n").filter(Boolean).forEach(function(linea){
-      var pp = document.createElement("p");
-      pp.textContent = linea;
-      p.appendChild(pp);
-    });
-    document.getElementById("parte").appendChild(p);
+  $("titulo").textContent = D.titulo || "Seguimiento";
+  if (D.subtitulo) { $("subtitulo").textContent = D.subtitulo; $("subtitulo").hidden = false; }
+
+  // La hora es la de la última vez que se escribió el archivo.
+  var sello = $("sello"), alDia = false;
+  var escrita = new Date(document.lastModified);
+  if (isNaN(escrita.getTime())) escrita = new Date(String(D.actualizado || "").replace(" ", "T"));
+  function pintarSello(){
+    var hoy = escrita.toDateString() === new Date().toDateString();
+    var cuando = (hoy ? "a las " : "el " + escrita.toLocaleDateString("es-ES", {day:"numeric", month:"long"}) + " a las ") + escrita.toLocaleTimeString("es-ES", {hour:"2-digit", minute:"2-digit"});
+    sello.className = "sello";
+    sello.textContent = "Última novedad " + cuando + "." + (alDia ? " Se pone al día sola." : "");
   }
 
-  var cont = document.getElementById("fases");
-  if (!todas.length){
-    var v = document.createElement("p");
-    v.className = "vacio";
-    v.textContent = "Todavía no hay tareas apuntadas.";
-    cont.appendChild(v);
+  function aPortapapeles(texto, boton, aviso){
+    function hecho(){ var antes = boton.textContent; boton.textContent = aviso; setTimeout(function(){ boton.textContent = antes; }, 2500); }
+    function reserva(){
+      var ta = document.createElement("textarea"); ta.value = texto; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); hecho(); } catch(_){}
+      document.body.removeChild(ta);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(texto).then(hecho, reserva);
+    else reserva();
+  }
+
+
+
+  function filaTarea(t, sinPalabra){
+    var clase = hecha(t) ? "hecho" : t.estado === "haciendo" || t.estado === "bloqueado" || t.estado === "descartado" ? t.estado : "";
+    var li = el("li", "tarea " + clase);
+    li.appendChild(el("span", "casilla"));
+    var c = el("div");
+    c.appendChild(el("span", "texto", t.texto));
+    if (t.estado === "haciendo") { c.appendChild(document.createTextNode(" ")); c.appendChild(el("span", "estado-palabra", "Ahora")); }
+    if (t.estado === "bloqueado" && !sinPalabra) { c.appendChild(document.createTextNode(" ")); c.appendChild(el("span", "estado-palabra parado", "Parado")); }
+    if (t.nota) c.appendChild(rico("span", "nota", t.nota));
+    li.appendChild(c);
+    return li;
+  }
+
+  // Lo que hace el agente: primero lo parado, luego por fases.
+  var flujo = el("div", "flujo");
+  var paradas = todas.filter(function(t){ return !deLaPersona(t) && t.estado === "bloqueado"; });
+  function enLista(t){ return !deLaPersona(t) && t.estado !== "bloqueado"; }
+  if (paradas.length) {
+    var secP = el("div", "fase");
+    secP.appendChild(el("h3", "parado-cab", "Parado"));
+    var ulP = el("ul", "tareas");
+    paradas.forEach(function(t){ ulP.appendChild(filaTarea(t, true)); });
+    secP.appendChild(ulP);
+    flujo.appendChild(secP);
   }
   fases.forEach(function(f){
-    var tareas = f.tareas || [];
-    var sec = document.createElement("section");
-    sec.className = "fase";
-
-    var utiles = tareas.filter(function(t){ return t.estado !== "descartado"; });
-    var fHechas = tareas.filter(function(t){ return t.estado === "hecho"; }).length;
-    var fPct = utiles.length ? Math.round(fHechas / utiles.length * 100) : 0;
-
-    var cab = document.createElement("div");
-    cab.className = "fase-cab";
-    var h2 = document.createElement("h2");
-    h2.textContent = f.nombre || "Tareas";
-    var c = document.createElement("span");
-    c.className = "fase-cuenta";
-    c.textContent = fHechas + "/" + utiles.length + "  ·  " + fPct + "%";
-    cab.appendChild(h2); cab.appendChild(c);
+    var aqui = (f.tareas || []).filter(enLista);
+    if (!aqui.length) return;
+    var propias = (f.tareas || []).filter(function(t){ return !deLaPersona(t) && t.estado !== "descartado"; });
+    var hechas = propias.filter(hecha).length;
+    var sec = el("div", "fase");
+    var cab = el("div", "fase-cab");
+    if (fases.length > 1 || f.nombre) cab.appendChild(el("h3", "", f.nombre || "Tareas"));
+    if (hechas) cab.appendChild(el("span", "", hechas + " de " + propias.length));
     sec.appendChild(cab);
-
-    var mini = document.createElement("div");
-    mini.className = "mini";
-    mini.innerHTML = '<i style="width:' + fPct + '%"></i>';
-    sec.appendChild(mini);
-
-    var ul = document.createElement("ul");
-    ul.className = "tareas";
-    tareas.forEach(function(t){
-      var e = ESTADOS.indexOf(t.estado) >= 0 ? t.estado : "pendiente";
-      var li = document.createElement("li");
-      li.className = "tarea " + e;
-      var marca = document.createElement("span");
-      marca.className = "marca";
-      marca.setAttribute("aria-hidden", "true");
-      var cuerpo = document.createElement("div");
-      var sp = document.createElement("span");
-      sp.className = "texto";
-      sp.textContent = t.texto || "";
-      cuerpo.appendChild(sp);
-      if (e === "haciendo" || e === "bloqueado"){
-        var et = document.createElement("span");
-        et.className = "etiqueta";
-        et.textContent = e === "haciendo" ? "en curso" : "bloqueado";
-        cuerpo.appendChild(et);
-      }
-      if (t.nota){
-        var n = document.createElement("span");
-        n.className = "nota";
-        n.textContent = t.nota;
-        cuerpo.appendChild(n);
-      }
-      li.appendChild(marca); li.appendChild(cuerpo);
-      ul.appendChild(li);
-    });
+    var ul = el("ul", "tareas");
+    aqui.forEach(function(t){ ul.appendChild(filaTarea(t)); });
     sec.appendChild(ul);
-    cont.appendChild(sec);
+    flujo.appendChild(sec);
   });
+  if (flujo.children.length) {
+    $("hago").appendChild(el("h2", "", "Lo que hago yo"));
+    if (flujo.children.length === 1) flujo.classList.add("una");
+    $("hago").appendChild(flujo);
+  }
+  // Dos columnas solo si las dos tienen algo: nunca media página vacía.
+  $("columnas").classList.toggle("sola", !$("decidir").children.length && !$("toca").children.length || !flujo.children.length);
 
-  // Recargar con F5 no deberia perder el sitio donde estabas leyendo.
+
+
+  function refrescar(){
+    pintarCifra();
+    pintarSello();
+  }
+  refrescar();
+  setInterval(pintarSello, 30000);
+
+  // Recargar no te mueve de sitio ni te saca de lo que escribes.
+  var ultimaTecla = 0;
+  document.addEventListener("input", function(){ ultimaTecla = Date.now(); });
   try {
-    var clave = "gresso-scroll:" + location.pathname;
-    var y = sessionStorage.getItem(clave);
-    if (y) window.scrollTo(0, parseInt(y, 10) || 0);
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+    var cs = CLAVE + ":sitio", guardado = JSON.parse(sessionStorage.getItem(cs) || "null");
+    if (guardado) {
+      window.scrollTo(0, guardado.y || 0);
+      var foco = guardado.foco && $(guardado.foco);
+      if (foco) { foco.focus({preventScroll:true}); try { foco.setSelectionRange(guardado.ini, guardado.fin); } catch(_){} }
+    }
     window.addEventListener("beforeunload", function(){
-      try { sessionStorage.setItem(clave, String(window.scrollY)); } catch(_){}
+      var a = document.activeElement, sitio = {y:window.scrollY};
+      if (a && a.tagName === "TEXTAREA") { sitio.foco = a.id; sitio.ini = a.selectionStart; sitio.fin = a.selectionEnd; }
+      try { sessionStorage.setItem(cs, JSON.stringify(sitio)); } catch(_){}
     });
   } catch(_){}
 
-  // Se pone al día sola: un script de al lado dice si el archivo ha cambiado, y solo entonces recarga.
-  var inicial = null;
+  // Se pone al día sola. Una página abierta como archivo no puede leerse a sí misma con fetch, pero sí
+  // cargar un script de al lado: ese script dice si el archivo ha cambiado, y solo entonces recarga.
+  var base = location.pathname.split("/").pop(), inicial = null;
+  function ocupado(){
+    var s = window.getSelection && window.getSelection(), a = document.activeElement;
+    if (s && !s.isCollapsed) return true;
+    if (!a || a.tagName !== "TEXTAREA") return false;
+    return a.selectionStart !== a.selectionEnd || Date.now() - ultimaTecla < 15000;
+  }
   function mirar(){
     var s = document.createElement("script");
-    s.src = location.pathname.split("/").pop() + ".version.js?x=" + Date.now();
+    s.src = base + ".version.js?x=" + Date.now();
     s.onload = function(){
       s.remove();
+      if (!alDia) { alDia = true; pintarSello(); }
       var v = window.__gressoVersion;
       if (inicial === null) inicial = v;
-      else if (v !== inicial && !(window.getSelection() && !window.getSelection().isCollapsed)) { location.reload(); return; }
+      else if (v !== inicial && !ocupado()) { location.reload(); return; }
       setTimeout(mirar, 5000);
     };
     s.onerror = function(){ s.remove(); setTimeout(mirar, 30000); };

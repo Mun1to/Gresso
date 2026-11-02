@@ -154,7 +154,11 @@ def cuentas(datos):
     # navegador dan cifras distintas para el mismo seguimiento.
     total = sum(peso(t) for t in utiles)
     hecho = sum(peso(t) for t in hechas)
-    pct = int(round(hecho * 100.0 / total)) if total else 0
+    # Se redondea igual que la página (round de Python deja 12,5 en 12 y la página en 13).
+    pct = int(hecho * 100.0 / total + 0.5) if total else 0
+    # Mientras quede algo, nunca dice 100: redondear hacia arriba sería mentir.
+    if pct > 99 and len(hechas) < len(utiles):
+        pct = 99
     return todas, utiles, hechas, pct
 
 

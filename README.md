@@ -5,7 +5,7 @@ every step in the terminal, or making you interrupt it to ask how far along it i
 keeps rewriting one HTML file as it works: a progress bar, a percentage, what is done, what is
 left and what is blocked. You leave the tab open and it keeps itself up to date.
 
-![A Gresso page: 57% done, one task blocked, two phases with their own progress](assets/preview.png)
+![A Gresso page: the next step on top, the percentage beside it, what you have to decide and what the agent is doing](assets/preview.png)
 
 ## Install
 
@@ -50,12 +50,13 @@ steps is ceremony.
 
 One HTML file, opened straight in your own browser, never a hosted page:
 
-- A big percentage and the number of tasks left, which is the question you actually have.
-- A progress bar in three colors: done in green, in progress in blue, blocked in red, so you
-  can tell at a glance whether what is left is moving or stuck.
-- Blocked tasks jump to the top in their own box, each with what is missing to unblock it.
+- A big percentage, one single-colour bar and the number of tasks left, which is the question
+  you actually have.
+- The state of a task is a plain bold word and a checkbox: no pills, no coloured dots, nothing
+  that pulses.
+- Blocked tasks come first in the agent's list, each with what is missing to unblock it.
 - A short "where I am" note the agent keeps up to date, in two or three lines.
-- Tasks grouped in phases, each with its own small bar and count.
+- Tasks grouped in phases, each with its count.
 - Dropped tasks stay visible but crossed out, and do not count towards the total, so the
   percentage never lies by keeping work that is no longer going to happen.
 - The time of the last update in the header, and the percentage in the tab title, so you can
