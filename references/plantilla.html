@@ -80,6 +80,13 @@ input[type=checkbox]:checked { background:var(--verde); border-color:var(--verde
 input[type=checkbox]:checked::after { content:""; width:7px; height:13px; border:solid #fff; border-width:0 3px 3px 0; transform:translateY(-2px) rotate(45deg); }
 .recogida h3 { text-decoration:line-through; color:var(--suave); }
 .recogida .cuerpo-tarjeta { display:none; }
+.opcion { display:grid; grid-template-columns:26px minmax(0,1fr); gap:0 12px; padding:9px 0; cursor:pointer; align-items:start; }
+.opcion .nom { color:var(--tinta); font-weight:600; }
+.opcion .det { display:block; font-size:1rem; }
+.opcion .rec { color:var(--acento-texto); font-weight:700; }
+textarea { display:block; width:100%; min-height:48px; margin-top:8px; padding:10px 12px; border:2px solid var(--linea); border-radius:8px; background:transparent; color:var(--tinta); font:inherit; resize:none; overflow:hidden; }
+textarea::placeholder { color:var(--suave); opacity:1; }
+.defecto { font-size:1rem; margin:8px 0 0 !important; }
 @media (max-width:1000px) {
   .arriba, .columnas { grid-template-columns:minmax(0,1fr); }
   .mascota { width:72px; height:72px; }
@@ -202,6 +209,64 @@ input[type=checkbox]:checked::after { content:""; width:7px; height:13px; border
     else reserva();
   }
 
+  // Lo que hay que decidir: casilla por opción, nada marcado de antemano.
+  function eleccion(t){
+    var r = respuestas[t.id] || {};
+    return r.opciones ? r.opciones.slice() : (typeof r.opcion === "number" ? [r.opcion] : []);
+  }
+  function respondida(t){ var r = respuestas[t.id] || {}; return eleccion(t).length > 0 || !!(r.texto && r.texto.trim()); }
+  var decisiones = todas.filter(function(t){ return t.decision && queda(t); });
+  function copiarRespuestas(boton){
+    var lineas = decisiones.map(function(t, i){
+      var r = respuestas[t.id] || {}, ops = t.decision.opciones || [];
+      var partes = eleccion(t).map(function(n){ return ops[n] && ops[n].texto; }).filter(Boolean);
+      if (r.texto && r.texto.trim()) partes.push("con mis palabras: " + r.texto.trim());
+      return (i + 1) + ". " + t.texto + " " + (partes.length ? partes.join(", ") : "(sin responder)");
+    });
+    aPortapapeles(lineas.join("\n"), boton, "Copiado, pégamelo en el chat");
+  }
+  if (decisiones.length) {
+    var cajaDec = $("decidir");
+    cajaDec.appendChild(el("h2", "", "Lo que tienes que decidir"));
+    decisiones.forEach(function(t){
+      var tar = el("article", "tarjeta"); tar.id = "t-" + t.id;
+      tar.appendChild(el("h3", "", t.texto));
+      if (t.porque) tar.appendChild(rico("p", "", t.porque));
+      var cajas = [];
+      (t.decision.opciones || []).forEach(function(o, i){
+        var lab = el("label", "opcion");
+        var inp = el("input"); inp.type = "checkbox"; inp.checked = eleccion(t).indexOf(i) >= 0;
+        cajas.push(inp);
+        inp.onchange = function(){
+          var r = respuestas[t.id] = respuestas[t.id] || {};
+          if (t.decision.varias) {
+            r.opciones = cajas.reduce(function(a, c, n){ if (c.checked) a.push(n); return a; }, []);
+          } else {
+            cajas.forEach(function(c){ if (c !== inp) c.checked = false; });
+            if (inp.checked) r.opcion = i; else delete r.opcion;
+          }
+          guardar("respuestas", respuestas); refrescar();
+        };
+        var cuerpo = el("span");
+        cuerpo.appendChild(el("span", "nom", o.texto));
+        if (o.recomendada) cuerpo.appendChild(el("span", "rec", ". La que te recomiendo"));
+        if (o.detalle) cuerpo.appendChild(el("span", "det", o.detalle));
+        if (o.noHace) cuerpo.appendChild(el("span", "det", "No hace: " + o.noHace));
+        lab.appendChild(inp); lab.appendChild(cuerpo); tar.appendChild(lab);
+      });
+      var r = respuestas[t.id] || {};
+      var ta = el("textarea"); ta.id = "r-" + t.id; ta.rows = 1; ta.placeholder = "Otra cosa, con tus palabras"; ta.setAttribute("aria-label", "Otra cosa, con tus palabras"); ta.value = r.texto || "";
+      function crece(){ ta.style.height = "auto"; ta.style.height = ta.scrollHeight + 4 + "px"; }
+      ta.oninput = function(){ var q = respuestas[t.id] = respuestas[t.id] || {}; q.texto = ta.value; guardar("respuestas", respuestas); crece(); refrescar(); };
+      tar.appendChild(ta);
+      if (t.decision.siNoDices) tar.appendChild(el("p", "defecto", t.decision.siNoDices));
+      cajaDec.appendChild(tar);
+      setTimeout(crece, 0);
+    });
+    var copiar = el("button", "boton fuerte", "Copiar respuestas"); copiar.type = "button";
+    copiar.onclick = function(){ copiarRespuestas(copiar); };
+    cajaDec.appendChild(copiar);
+  }
 
   // Lo que le toca a quien lee: por qué, pasos, botones y una casilla que cuenta en el porcentaje.
   var tocan = todas.filter(function(t){ return t.quien === "tu" && !t.decision && t.estado !== "hecho" && t.estado !== "descartado"; });

@@ -18,8 +18,7 @@ Un seguimiento que solo se escribe al terminar no es un seguimiento, es un infor
 levantar algo nuevo, una migración, una auditoría, un plan con casillas, limpiar un repo
 entero, el parte de lo que queda por desarrollar en un proyecto.
 
-**No**, para una respuesta de una sola vez, un arreglo de dos líneas, ni una página donde hay
-que elegir entre opciones. Montar un seguimiento para tres pasos es ceremonia, y una
+**No**, para una respuesta de una sola vez ni un arreglo de dos líneas. Montar un seguimiento para tres pasos es ceremonia, y una
 herramienta que salta a cada rato se acaba ignorando entera.
 
 ## Proceso
@@ -60,6 +59,28 @@ móvil, y con todo lo que necesita para hacerlo sin preguntar:
 Cada tarea suya lleva una casilla que guarda en su navegador y cuenta en el porcentaje. **Esa casilla
 no llega a ti**: cuando te lo diga, márcala con `estado`, y entonces cuenta también en `ver`. `porque`,
 `pasos`, `dime` y `nota` admiten `<strong>`, `<em>`, `<code>` y enlaces; cualquier otra etiqueta se ignora.
+
+**Lo que tiene que decidir va en la misma página**, no en otra. Una decisión es una tarea con el
+campo `decision`:
+
+```json
+{"texto": "¿Publico hoy o espero al lunes?", "quien": "tu",
+ "porque": "El lunes tendrás a alguien mirando si algo falla.",
+ "decision": {
+   "opciones": [
+     {"texto": "Hoy", "recomendada": true, "detalle": "Queda hecho y te lo enseño.",
+      "noHace": "avisar a los clientes, eso va aparte"},
+     {"texto": "El lunes"}
+   ],
+   "siNoDices": "Si no me dices nada, espero al lunes."
+ }}
+```
+
+Cada opción lleva su casilla, y la recomendada se dice con palabras: **nunca se deja marcada de
+antemano**. Solo se marca una, salvo con `"varias": true`. Debajo hay una caja «Otra cosa, con tus
+palabras» y un botón «Copiar respuestas», y todo se guarda en su navegador. Si una opción se puede leer
+de dos maneras, di en `noHace` lo que no incluye. Cuando te conteste, ciérrala:
+`estado t3=hecho:"eligió el lunes"`.
 
 Lo `descartado` sale del total: no es trabajo que quede, y dejarlo contando hunde el porcentaje
 sin motivo. Se queda escrito y tachado, porque saber qué se decidió no hacer es información.

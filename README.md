@@ -58,6 +58,8 @@ One HTML file, opened straight in your own browser, never a hosted page:
 - What you have to do goes apart from what the agent does, in two columns on a big screen and one
   on a phone: why, numbered steps, buttons to open a link or copy a value, what to say when you
   finish, and a checkbox saved in your browser that counts towards the percentage.
+- Decisions live on the same page: a checkbox per option, the recommended one said in words and
+  never preselected, a box for your own answer, and a "copy answers" button to paste in the chat.
 - A short "where I am" note the agent keeps up to date, in two or three lines.
 - Tasks grouped in phases, each with its count.
 - Dropped tasks stay visible but crossed out, and do not count towards the total, so the

@@ -17,6 +17,8 @@ tareas.json -> la lista de tareas sola, con la misma forma.
 
 Una tarea de quien lee lleva además "quien":"tu", y puede traer "porque", "pasos":[...],
 "acciones":[{"texto":...,"url":...} o {"texto":...,"copiar":...}] y "dime".
+Una decisión lleva "decision":{"opciones":[{"texto":...,"recomendada":true,"detalle":...,
+"noHace":...}],"siNoDices":...,"varias":false}.
 
 Toda orden que cambia algo escribe también <salida.html>.version.js: la pestaña abierta lo
 pide cada pocos segundos y se pone al día sola, sin pulsar F5.
@@ -101,6 +103,9 @@ def numerar(fases):
         vistos.add(tid)
         if t.get("estado") not in ESTADOS:
             t["estado"] = "pendiente"
+        # Una decisión sin opciones no se puede contestar en la página: mejor saberlo ahora.
+        if t.get("decision") is not None and not (t["decision"] or {}).get("opciones"):
+            sys.stderr.write('gresso: aviso: la decisión "%s" no trae opciones\n' % t.get("texto", ""))
         # Quien lee es "tu"; sin este campo, la tarea es del agente, como siempre.
         if str(t.get("quien", "")).strip().lower() in ("tu", "tú"):
             t["quien"] = "tu"
