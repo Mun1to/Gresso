@@ -99,6 +99,10 @@ entre sesiones, `crear` apunta la ruta de la página y su proyecto en `~/.gresso
 
 ### 3. Crea el archivo en una ruta que no cambie
 
+**Ninguna contraseña ni clave a la vista.** Si la persona necesita una, va en un botón que la copia sin
+enseñarla: `{"texto": "Copiar la contraseña", "copiar": "..."}`. El script avisa si ve algo con esa
+pinta en un texto visible, y aun así el dato sigue dentro del archivo: esa página no se sube a ningún sitio.
+
 En la carpeta temporal de la sesión si es el parte de un encargo, **nunca dentro del código del
 proyecto**. El nombre no lleva fecha ni número de versión: la misma pestaña tiene que servir de
 principio a fin.

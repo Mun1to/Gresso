@@ -68,6 +68,8 @@ One HTML file, opened straight in your own browser, never a hosted page:
   is left. Dropped tasks stay there crossed out, and do not count towards the total.
 - The time of the last update in the header, and the percentage in the tab title. If the file has
   not been written for 90 minutes, the header says so in red instead of pretending to be current.
+- Nothing secret in plain view: a password goes in a button that copies it without showing it, and
+  the script warns if it sees something like one in the visible text.
 - Light or dark following your system, readable on a phone, no internet needed.
 - It updates by itself, no `F5`: each command writes a small `<page>.html.version.js` next to
   the page, the open tab asks for it every 5 seconds and reloads only if it changed. No changes,

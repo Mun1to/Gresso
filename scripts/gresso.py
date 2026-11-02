@@ -121,6 +121,60 @@ def numerar(fases):
     return fases
 
 
+# Algo que parece una contraseña a la vista. Se avisa sin repetirla, ni en la terminal.
+PALABRA_SECRETA = re.compile(
+    r"(contrase[nñ]a|password|passwd|pwd|clave|token|secret\w*|api[ _-]?key)"
+    r"(?:\s+(?:es|era))?\s*[:=]?\s*[\"'«]?([^\s\"'»,;]{6,})",
+    re.IGNORECASE,
+)
+FORMATO_SECRETO = re.compile(
+    r"\b(sk-[A-Za-z0-9_-]{16,}|gh[pousr]_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}"
+    r"|xox[abprs]-[A-Za-z0-9-]{10,}|eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{5,})\b"
+)
+
+
+def parece_secreto(texto):
+    if not isinstance(texto, str):
+        return False
+    if FORMATO_SECRETO.search(texto):
+        return True
+    for m in PALABRA_SECRETA.finditer(texto):
+        # "la clave de API" o "la contraseña nueva" no enseñan nada: un valor lleva cifras o signos.
+        if re.search(r"[\d@#$%&*!?_+=/-]", m.group(2)):
+            return True
+    return False
+
+
+def textos_a_la_vista(datos):
+    """Todo lo que la página enseña. Lo de "copiar" no se enseña, y por eso se queda fuera."""
+    for campo in ("titulo", "subtitulo", "parte"):
+        yield "el campo " + campo, datos.get(campo)
+    for fase in datos.get("fases", []):
+        for t in fase.get("tareas", []):
+            nombre = "la tarea %s" % t.get("id", "?")
+            for campo in ("texto", "nota", "porque", "dime"):
+                yield nombre, t.get(campo)
+            for paso in t.get("pasos") or []:
+                yield nombre, paso
+            for accion in t.get("acciones") or []:
+                yield nombre, accion.get("texto")
+            decision = t.get("decision") or {}
+            yield nombre, decision.get("siNoDices")
+            for opcion in decision.get("opciones") or []:
+                for campo in ("texto", "detalle", "noHace"):
+                    yield nombre, opcion.get(campo)
+
+
+def avisar_secretos(datos):
+    avisados = set()
+    for donde, texto in textos_a_la_vista(datos):
+        if donde not in avisados and parece_secreto(texto):
+            avisados.add(donde)
+            sys.stderr.write('gresso: aviso: %s parece enseñar una contraseña o una clave. Quítala de '
+                             'la vista y ponla en un botón: {"texto":"Copiar la contraseña","copiar":"..."}\n'
+                             % donde)
+
+
 def incrustar(html, datos):
     datos["actualizado"] = ahora()
     # El JSON vive dentro de un <script>: un "</" suelto cerraria la etiqueta antes de tiempo.
@@ -159,6 +213,7 @@ def escribir(ruta, texto):
 
 
 def guardar(ruta, html, datos):
+    avisar_secretos(datos)
     escribir(ruta, incrustar(html, datos))
     # La página pide este script cada pocos segundos y solo recarga si ha cambiado. Va después
     # del HTML: si fuera antes, la pestaña podría recargar y seguir viendo lo de antes.
