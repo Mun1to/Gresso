@@ -50,7 +50,19 @@ Cada tarea admite:
 Lo `descartado` sale del total: no es trabajo que quede, y dejarlo contando hunde el porcentaje
 sin motivo. Se queda escrito y tachado, porque saber qué se decidió no hacer es información.
 
-### 2. Crea el archivo en una ruta que no cambie
+### 2. Una sola página por frente
+
+Una persona nunca debería preguntarse cuál de sus pestañas es la buena. **Si ya hay un seguimiento
+abierto de este frente, no crees otro: añade a ese con `anadir`.** `crear` avisa por la salida de
+errores si ve otro sin terminar en esa carpeta o para ese proyecto, con su ruta y su porcentaje, y
+aun así crea la página: si no es el mismo frente, sigue. Si es el mismo, borra la que acabas de
+crear y usa la otra.
+
+El proyecto es el repositorio de git donde trabajas, o el que digas con `--proyecto`. Para acordarse
+entre sesiones, `crear` apunta la ruta de la página y su proyecto en `~/.gresso/seguimientos.json`
+(otra ubicación con la variable `GRESSO_REGISTRO`). Es un archivo local y no sale de la máquina.
+
+### 3. Crea el archivo en una ruta que no cambie
 
 En la carpeta temporal de la sesión si es el parte de un encargo, **nunca dentro del código del
 proyecto**. El nombre no lleva fecha ni número de versión: la misma pestaña tiene que servir de
@@ -83,7 +95,7 @@ El script imprime la ruta absoluta y nada más. **No abras la plantilla ni el HT
 las herramientas de leer archivo**: son cientos de líneas que no necesitas en el contexto, y
 para eso está `ver`.
 
-### 3. Ábrelo una vez, delante, y dilo en una línea
+### 4. Ábrelo una vez, delante, y dilo en una línea
 
 Ábrelo tú mismo en el navegador (`Start-Process "<ruta>"` en Windows, `open` en macOS,
 `xdg-open` en Linux), sin pedir permiso y sin limitarte a dejar la ruta escrita para que otro la
@@ -96,7 +108,7 @@ y al recargar conserva el scroll, lo plegado, lo marcado y lo escrito. No recarg
 escribe o tiene un texto seleccionado. **Deja ese archivo junto al HTML**: si lo mueves o lo
 borras, la pestaña deja de enterarse.
 
-### 4. Reescríbelo cada vez que avanzas, no al final
+### 5. Reescríbelo cada vez que avanzas, no al final
 
 Esta es la skill entera. Al cerrar un paso, al empezar el siguiente, al chocar con un bloqueo
 y al cambiar el plan:
@@ -127,7 +139,7 @@ Dos trampas que lo convierten en un informe sin que te des cuenta:
 2. **No apuntar lo que surge.** Las tareas nuevas se añaden cuando aparecen; un porcentaje que
    solo sube porque el plan se hizo pequeño es mentira.
 
-### 5. Al cerrar
+### 6. Al cerrar
 
 Deja todo en su estado real, incluido lo que quedó sin hacer y por qué. Un seguimiento que
 termina con tareas en `haciendo` para siempre es basura. Si el encargo sigue mañana, **el

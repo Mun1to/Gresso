@@ -67,6 +67,14 @@ One HTML file, opened straight in your own browser, never a hosted page:
 
 The page labels are in Spanish. The task text is whatever language the agent writes it in.
 
+## One page per front
+
+Nobody should have to ask which of two tabs is the right one. `crear` warns if there is another
+unfinished page in that folder or for that project, and the skill tells the agent to add to the
+open page instead of starting a new one. To remember pages across sessions it writes one local
+file, `~/.gresso/seguimientos.json` (path and project of each page, nothing else, never sent
+anywhere). Set `GRESSO_REGISTRO` to keep it somewhere else.
+
 ## How it works
 
 The page carries its data in a JSON block, and a small script (`scripts/gresso.py`) rewrites
