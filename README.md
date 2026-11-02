@@ -50,6 +50,8 @@ steps is ceremony.
 
 One HTML file, opened straight in your own browser, never a hosted page:
 
+- On top, the next step: what you have to do, with a button that takes you there, and what the
+  agent is doing now. It is worked out from the tasks.
 - A big percentage, one single-colour bar and the number of tasks left, which is the question
   you actually have.
 - The state of a task is a plain bold word and a checkbox: no pills, no coloured dots, nothing

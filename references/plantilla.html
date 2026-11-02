@@ -351,10 +351,51 @@ textarea::placeholder { color:var(--suave); opacity:1; }
   // Dos columnas solo si las dos tienen algo: nunca media página vacía.
   $("columnas").classList.toggle("sola", !$("decidir").children.length && !$("toca").children.length || !flujo.children.length);
 
+  // Lo siguiente sale solo de las tareas.
+  function irA(id){ var e = $("t-" + id); if (e) e.scrollIntoView({behavior:"smooth", block:"center"}); }
+  function pintarSiguiente(){
+    var caja = $("siguiente");
+    caja.textContent = "";
+    caja.appendChild(el("h2", "", "Lo siguiente"));
+    var mirables = todas.filter(function(t){ return deLaPersona(t) && queda(t) && t.estado !== "bloqueado" && !marcada(t); });
+    var tuya = mirables.filter(function(t){ return !(t.decision && respondida(t)); })[0];
+    var porPasar = mirables.filter(function(t){ return t.decision && respondida(t); });
+    var filaTu = el("div", "fila-sig");
+    filaTu.appendChild(el("b", "", "Tú"));
+    if (tuya) {
+      filaTu.appendChild(el("span", "que", (tuya.decision ? "Decidir: " : "") + tuya.texto));
+      var ir = el("button", "boton fuerte", tuya.decision ? "Ir a la decisión" : "Ir a ese paso");
+      ir.type = "button"; ir.onclick = function(){ irA(tuya.id); };
+      filaTu.appendChild(ir);
+    } else if (porPasar.length) {
+      filaTu.appendChild(el("span", "que", "Pasarme lo que has decidido"));
+      var pasar = el("button", "boton fuerte", "Copiar respuestas");
+      pasar.type = "button"; pasar.onclick = function(){ copiarRespuestas(pasar); };
+      filaTu.appendChild(pasar);
+    } else {
+      filaTu.appendChild(el("span", "que", "Nada ahora mismo. Te aviso aquí cuando te necesite."));
+    }
+    caja.appendChild(filaTu);
+    var mias = todas.filter(function(t){ return !deLaPersona(t) && t.estado === "haciendo"; });
+    var quedanMias = todas.filter(function(t){ return !deLaPersona(t) && queda(t); });
+    var filaYo = el("div", "fila-sig");
+    filaYo.appendChild(el("b", "", "Yo"));
+    var ahora;
+    if (mias.length) ahora = mias.map(function(t){ return t.texto; }).join(". ");
+    else if (!todas.some(queda) && todas.length) ahora = "Terminado.";
+    else if (mirables.length) ahora = "Esperándote: no tengo nada en marcha.";
+    else if (quedanMias.filter(function(t){ return t.estado !== "bloqueado"; }).length) ahora = "Nada en marcha ahora mismo. Lo próximo: " + quedanMias.filter(function(t){ return t.estado !== "bloqueado"; })[0].texto;
+    else if (quedanMias.length) ahora = "Parado: " + quedanMias[0].texto;
+    else ahora = "Nada en marcha ahora mismo.";
+    filaYo.appendChild(el("span", "que", ahora));
+    if (D.parte) filaYo.appendChild(rico("span", "como", D.parte));
+    caja.appendChild(filaYo);
+  }
 
 
   function refrescar(){
     pintarCifra();
+    pintarSiguiente();
     pintarSello();
   }
   refrescar();

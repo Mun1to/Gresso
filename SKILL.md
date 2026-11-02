@@ -189,6 +189,9 @@ interno, no se sube a un repositorio público.
 
 - **Un solo archivo, cero CDN.** Tiene que verse igual sin internet.
 - **Tema del sistema sin botón**, claro u oscuro por `prefers-color-scheme`, y legible en el móvil.
+- **Arriba, «Lo siguiente»**: lo que le toca a quien lee, con un botón que lleva a ese paso, y lo
+  que hace el agente ahora. Sale solo de las tareas, no se escribe aparte: basta con que los estados
+  estén al día. El `parte` va debajo de lo del agente.
 - **La cifra grande del porcentaje, una barra de un solo color y una frase**: «31 de 60 tareas
   hechas. Quedan 29.», que es la pregunta de verdad.
 - **Lo parado va primero** en lo que hace el agente, con lo que falta para desbloquearlo.
