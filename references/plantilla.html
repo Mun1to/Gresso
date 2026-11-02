@@ -233,6 +233,14 @@ textarea::placeholder { color:var(--suave); opacity:1; }
   function pintarSello(){
     var hoy = escrita.toDateString() === new Date().toDateString();
     var cuando = (hoy ? "a las " : "el " + escrita.toLocaleDateString("es-ES", {day:"numeric", month:"long"}) + " a las ") + escrita.toLocaleTimeString("es-ES", {hour:"2-digit", minute:"2-digit"});
+    var min = Math.floor((Date.now() - escrita.getTime()) / 60000);
+    if (todas.length && !todas.some(queda)) { sello.className = "sello"; sello.textContent = "Terminado " + cuando + "."; return; }
+    if (min >= 90) {
+      var horas = Math.floor(min / 60), dias = Math.floor(horas / 24);
+      sello.className = "sello parada";
+      sello.textContent = "Última novedad " + cuando + ": lleva " + (dias >= 2 ? dias + " días" : horas + " h") + " sin moverse.";
+      return;
+    }
     sello.className = "sello";
     sello.textContent = "Última novedad " + cuando + "." + (alDia ? " Se pone al día sola." : "");
   }

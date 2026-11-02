@@ -198,8 +198,9 @@ interno, no se sube a un repositorio público.
 - **El estado es una palabra suelta en negrita** («Ahora», «Parado») y una casilla. Sin fichas, sin
   puntos de color, sin nada que lata y sin mini gráficos: la página no se explica a sí misma.
 - **Letra de 17 px para arriba**, que crece en pantallas grandes, y nada por debajo de 16.
-- **La hora de la última actualización en la cabecera**, y el porcentaje también en el título de
-  la pestaña, para verlo sin cambiar de ventana.
+- **La hora de la última novedad en la cabecera**, y el porcentaje también en el título de la
+  pestaña. **Si el archivo lleva 90 minutos sin escribirse, lo dice en rojo** («lleva 2 h sin
+  moverse») en vez de seguir aparentando estar al día: si paras con tareas abiertas, se verá.
 - **Se pone al día sola y no te mueve de sitio**: conserva el scroll al recargar.
 
 ## La marca del proyecto

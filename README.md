@@ -66,8 +66,8 @@ One HTML file, opened straight in your own browser, never a hosted page:
 - Tasks grouped in phases, each with its count.
 - Dropped tasks stay visible but crossed out, and do not count towards the total, so the
   percentage never lies by keeping work that is no longer going to happen.
-- The time of the last update in the header, and the percentage in the tab title, so you can
-  check it without even switching tabs.
+- The time of the last update in the header, and the percentage in the tab title. If the file has
+  not been written for 90 minutes, the header says so in red instead of pretending to be current.
 - Light or dark following your system, readable on a phone, no internet needed.
 - It updates by itself, no `F5`: each command writes a small `<page>.html.version.js` next to
   the page, the open tab asks for it every 5 seconds and reloads only if it changed. No changes,
