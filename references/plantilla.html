@@ -169,7 +169,8 @@ details.listo .dentro { margin-top:16px; }
   var NOMBRES = {fondo:"--bg", tarjeta:"--card", tinta:"--tinta", texto:"--texto", suave:"--suave", acento:"--acento", acentoTexto:"--acento-texto", sobreAcento:"--sobre-acento", botonSuave:"--boton-suave", botonSuaveTexto:"--boton-suave-texto", linea:"--linea", caja:"--caja", exito:"--verde", alerta:"--rojo", fondoBarra:"--fondo-barra"};
   function reglas(colores){
     var r = "";
-    for (var k in colores) if (NOMBRES[k] && /^[#\w(),.%\s-]+$/.test(String(colores[k]))) r += NOMBRES[k] + ":" + colores[k] + ";";
+    // Sin marca, el acento llega vacío: dejarlo pasar escribiría "--acento:undefined" y el botón principal se quedaría sin fondo.
+    for (var k in colores) if (NOMBRES[k] && colores[k] != null && /^[#\w(),.%\s-]+$/.test(String(colores[k]))) r += NOMBRES[k] + ":" + colores[k] + ";";
     return r;
   }
   function sobre(hex){
