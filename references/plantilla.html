@@ -40,7 +40,7 @@ a { color:var(--acento-texto); }
 .columnas.sola { grid-template-columns:minmax(0,1fr); }
 .columnas > div:empty { display:none; }
 .seccion:empty { display:none; }
-.seccion + .seccion:not(:empty) { margin-top:44px; }
+.seccion:not(:empty) + .seccion:not(:empty) { margin-top:44px; }
 .flujo { column-gap:clamp(32px,4vw,72px); }
 .flujo > * { break-inside:avoid; }
 .sola .flujo, .flujo.siempre { columns:2 420px; }
