@@ -55,6 +55,20 @@ móvil, y con todo lo que necesita para hacerlo sin preguntar:
 - `acciones` - botones: `{"texto": "Abrir el panel", "url": "https://..."}` abre un enlace y
   `{"texto": "Copiar el correo", "copiar": "..."}` copia un dato.
 - `dime` - lo que tiene que decirte al acabar.
+- `ya` - `true` si tiene que hacerlo **ya, sí o sí**. Solo cuando se cumplen las dos cosas: solo puede
+  hacerlo quien lee (su cuenta, su firma, su dinero, su permiso para publicar, su opinión cuando un
+  trabajo está parado esperándola) **y** algo se para o se pierde si no lo hace ahora (un trabajo
+  bloqueado, un plazo, una caducidad). Su `texto` dice qué hace, dónde y qué se para si no lo hace, en
+  la misma frase: `"Pagar la factura del servidor antes del día 10: si no, lo apagan"`.
+
+**Lo urgente va arriba del todo y aparte**, en «Ya, sí o sí», por encima de «Lo siguiente», con sus
+pasos y sus botones como cualquier tarea suya. Entonces el resto de lo suyo pasa a llamarse «Cuando
+puedas». **Como mucho tres a la vista**, en el orden de la página: si hay más, una línea dice cuántas
+y las demás bajan, las primeras, a «Cuando puedas» (el script avisa). Si todo es urgente, nada lo es:
+lo que puede esperar no lleva `ya`. Sin ninguna tarea `ya`, el bloque no sale y la página queda como
+siempre. Vale también en una decisión. Para subirla o bajarla después, sin tocar su estado:
+`estado <ruta> t3=ya` o `estado <ruta> t3=noya`. Cuando pasa a `hecho`, sale sola del bloque. En lo
+que hace el agente, `ya` no vale: no es urgente para quien lee si no tiene que hacerlo él.
 
 Cada tarea suya lleva una casilla que guarda en su navegador y cuenta en el porcentaje. **Esa casilla
 no llega a ti**: cuando te lo diga, márcala con `estado`, y entonces cuenta también en `ver`. `porque`,
@@ -157,6 +171,9 @@ y al cambiar el plan:
 # cambiar estados (varios de una vez); con ":" detrás se pone la nota, y con ":" solo se borra
 python3 "$GRESSO" estado "<ruta>" t1=hecho t2=haciendo "t5=bloqueado:falta la clave de API"
 
+# subir a «Ya, sí o sí» lo que no puede esperar, o bajarlo a «Cuando puedas»
+python3 "$GRESSO" estado "<ruta>" t4=ya t6=noya
+
 # el parte de situación de arriba, en dos o tres líneas
 python3 "$GRESSO" parte "<ruta>" "DNS ya apuntando. Esperando a que propague para probar el candado."
 
@@ -194,9 +211,12 @@ interno, no se sube a un repositorio público.
 
 - **Un solo archivo, cero CDN.** Tiene que verse igual sin internet.
 - **Tema del sistema sin botón**, claro u oscuro por `prefers-color-scheme`, y legible en el móvil.
-- **Arriba, «Lo siguiente»**: lo que le toca a quien lee, con un botón que lleva a ese paso, y lo
+- **Arriba del todo, «Ya, sí o sí»**, solo si alguna tarea lleva `ya`: como mucho tres, una al lado
+  de otra en pantalla grande y una debajo de otra en el móvil, y una línea si hay más.
+- **Debajo, «Lo siguiente»**: lo que le toca a quien lee, con un botón que lleva a ese paso, y lo
   que hace el agente ahora. Sale solo de las tareas, no se escribe aparte: basta con que los estados
-  estén al día. El `parte` va debajo de lo del agente.
+  estén al día. Mientras quede algo en «Ya, sí o sí», la línea de quien lee no sale, porque lo
+  repetiría. El `parte` va debajo de lo del agente.
 - **La cifra grande del porcentaje, una barra de un solo color y una frase**: «31 de 60 tareas
   hechas. Quedan 29.», que es la pregunta de verdad.
 - **Lo parado va primero** en lo que hace el agente, con lo que falta para desbloquearlo.

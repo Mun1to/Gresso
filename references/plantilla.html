@@ -26,6 +26,12 @@ a { color:var(--acento-texto); }
 .sub { margin:8px 0 0; }
 .sello { color:var(--suave); margin:8px 0 0; }
 .sello.parada { color:var(--rojo); font-weight:600; }
+.ya { margin-top:28px; }
+.ya:not([hidden]) + .arriba { margin-top:44px; }
+.ya-tarjetas { display:grid; grid-template-columns:minmax(0,1fr); gap:16px; align-items:start; }
+.ya-tarjetas .tarjeta { margin:0; }
+.ya-mas { color:var(--tinta); font-weight:600; margin:14px 0 0; }
+.lado:empty { display:none; }
 .arriba { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:clamp(24px,4vw,72px); margin-top:28px; align-items:start; }
 .fila-sig { display:grid; grid-template-columns:3.2rem minmax(0,1fr); gap:4px 12px; margin:0 0 16px; }
 .fila-sig b { font-family:var(--letra-titulos); font-weight:800; color:var(--tinta); font-size:1.1875rem; line-height:1.4; }
@@ -94,6 +100,19 @@ details.listo summary::before { content:""; width:11px; height:11px; border:soli
 details.listo[open] summary::before { transform:translateY(-3px) rotate(45deg); }
 details.listo .dentro { margin-top:16px; }
 #listo { margin-top:32px; }
+/* Lo urgente, una al lado de otra: con dos o tres, a partes iguales; con tres en una pantalla mediana, la
+   tercera a todo el ancho para que no quede una fila coja; con una sola, sus textos a un lado y lo que hay
+   que hacer al otro, para que la tarjeta no se quede media vacía. */
+@media (min-width:1001px) {
+  .ya[data-n="2"] .ya-tarjetas, .ya[data-n="3"] .ya-tarjetas { grid-template-columns:repeat(2, minmax(0,1fr)); }
+  .ya[data-n="3"] .tarjeta:nth-child(3) { grid-column:1 / -1; }
+  .ya[data-n="1"] .tarjeta:not(.recogida) .cuerpo-tarjeta { display:flex; gap:clamp(32px,4vw,72px); }
+  .ya[data-n="1"] .cuerpo-tarjeta > .lado { flex:1 1 0; min-width:0; }
+}
+@media (min-width:1280px) {
+  .ya[data-n="3"] .ya-tarjetas { grid-template-columns:repeat(3, minmax(0,1fr)); }
+  .ya[data-n="3"] .tarjeta:nth-child(3) { grid-column:auto; }
+}
 @media (max-width:1000px) {
   .arriba, .columnas { grid-template-columns:minmax(0,1fr); }
   .mascota { width:72px; height:72px; }
@@ -112,6 +131,8 @@ details.listo .dentro { margin-top:16px; }
     </div>
     <img class="mascota" id="mascota" alt="" hidden>
   </header>
+
+  <section class="ya" id="ya" hidden></section>
 
   <div class="arriba">
     <section id="siguiente"></section>
@@ -280,82 +301,117 @@ details.listo .dentro { margin-top:16px; }
     });
     aPortapapeles(lineas.join("\n"), boton, "Copiado, pégamelo en el chat");
   }
-  if (decisiones.length) {
+  function botonCopiar(){
+    var b = el("button", "boton fuerte", "Copiar respuestas"); b.type = "button";
+    b.onclick = function(){ copiarRespuestas(b); };
+    return b;
+  }
+
+  // Lo que tiene que hacer ya, sí o sí: solo puede hacerlo quien lee y algo se para si no lo hace.
+  // Va arriba del todo y aparte. Como mucho tres; las demás bajan, las primeras, a su sitio de siempre.
+  function esYa(t){ return t.ya === true && deLaPersona(t); }
+  var urgentes = todas.filter(function(t){ return esYa(t) && t.estado !== "hecho" && t.estado !== "descartado"; });
+  var MAX_YA = 3, arribaYa = urgentes.slice(0, MAX_YA), sobranYa = urgentes.slice(MAX_YA);
+  function enArriba(t){ return arribaYa.indexOf(t) >= 0; }
+  function urgentesPrimero(lista){ return lista.filter(esYa).concat(lista.filter(function(t){ return !esYa(t); })); }
+  var usaYa = todas.some(esYa);
+
+  function tarjetaDecision(t, conCopiar){
+    var tar = el("article", "tarjeta"); tar.id = "t-" + t.id;
+    tar.appendChild(el("h3", "", t.texto));
+    var dentro = el("div", "cuerpo-tarjeta"), textos = el("div", "lado"), hacer = el("div", "lado");
+    if (t.porque) textos.appendChild(rico("p", "", t.porque));
+    var cajas = [];
+    (t.decision.opciones || []).forEach(function(o, i){
+      var lab = el("label", "opcion");
+      var inp = el("input"); inp.type = "checkbox"; inp.checked = eleccion(t).indexOf(i) >= 0;
+      cajas.push(inp);
+      inp.onchange = function(){
+        var r = respuestas[t.id] = respuestas[t.id] || {};
+        if (t.decision.varias) {
+          r.opciones = cajas.reduce(function(a, c, n){ if (c.checked) a.push(n); return a; }, []);
+        } else {
+          cajas.forEach(function(c){ if (c !== inp) c.checked = false; });
+          if (inp.checked) r.opcion = i; else delete r.opcion;
+        }
+        guardar("respuestas", respuestas); refrescar();
+      };
+      var cuerpo = el("span");
+      cuerpo.appendChild(el("span", "nom", o.texto));
+      if (o.recomendada) cuerpo.appendChild(el("span", "rec", ". La que te recomiendo"));
+      if (o.detalle) cuerpo.appendChild(el("span", "det", o.detalle));
+      if (o.noHace) cuerpo.appendChild(el("span", "det", "No hace: " + o.noHace));
+      lab.appendChild(inp); lab.appendChild(cuerpo); hacer.appendChild(lab);
+    });
+    var r = respuestas[t.id] || {};
+    var ta = el("textarea"); ta.id = "r-" + t.id; ta.rows = 1; ta.placeholder = "Otra cosa, con tus palabras"; ta.setAttribute("aria-label", "Otra cosa, con tus palabras"); ta.value = r.texto || "";
+    function crece(){ ta.style.height = "auto"; ta.style.height = ta.scrollHeight + 4 + "px"; }
+    ta.oninput = function(){ var q = respuestas[t.id] = respuestas[t.id] || {}; q.texto = ta.value; guardar("respuestas", respuestas); crece(); refrescar(); };
+    hacer.appendChild(ta);
+    if (t.decision.siNoDices) hacer.appendChild(el("p", "defecto", t.decision.siNoDices));
+    if (conCopiar) { var fila = el("div", "acciones"); fila.appendChild(botonCopiar()); hacer.appendChild(fila); }
+    dentro.appendChild(textos); dentro.appendChild(hacer); tar.appendChild(dentro);
+    setTimeout(crece, 0);
+    return tar;
+  }
+  var decidirAbajo = urgentesPrimero(decisiones.filter(function(t){ return !enArriba(t); }));
+  if (decidirAbajo.length) {
     var cajaDec = $("decidir");
     cajaDec.appendChild(el("h2", "", "Lo que tienes que decidir"));
-    decisiones.forEach(function(t){
-      var tar = el("article", "tarjeta"); tar.id = "t-" + t.id;
-      tar.appendChild(el("h3", "", t.texto));
-      if (t.porque) tar.appendChild(rico("p", "", t.porque));
-      var cajas = [];
-      (t.decision.opciones || []).forEach(function(o, i){
-        var lab = el("label", "opcion");
-        var inp = el("input"); inp.type = "checkbox"; inp.checked = eleccion(t).indexOf(i) >= 0;
-        cajas.push(inp);
-        inp.onchange = function(){
-          var r = respuestas[t.id] = respuestas[t.id] || {};
-          if (t.decision.varias) {
-            r.opciones = cajas.reduce(function(a, c, n){ if (c.checked) a.push(n); return a; }, []);
-          } else {
-            cajas.forEach(function(c){ if (c !== inp) c.checked = false; });
-            if (inp.checked) r.opcion = i; else delete r.opcion;
-          }
-          guardar("respuestas", respuestas); refrescar();
-        };
-        var cuerpo = el("span");
-        cuerpo.appendChild(el("span", "nom", o.texto));
-        if (o.recomendada) cuerpo.appendChild(el("span", "rec", ". La que te recomiendo"));
-        if (o.detalle) cuerpo.appendChild(el("span", "det", o.detalle));
-        if (o.noHace) cuerpo.appendChild(el("span", "det", "No hace: " + o.noHace));
-        lab.appendChild(inp); lab.appendChild(cuerpo); tar.appendChild(lab);
-      });
-      var r = respuestas[t.id] || {};
-      var ta = el("textarea"); ta.id = "r-" + t.id; ta.rows = 1; ta.placeholder = "Otra cosa, con tus palabras"; ta.setAttribute("aria-label", "Otra cosa, con tus palabras"); ta.value = r.texto || "";
-      function crece(){ ta.style.height = "auto"; ta.style.height = ta.scrollHeight + 4 + "px"; }
-      ta.oninput = function(){ var q = respuestas[t.id] = respuestas[t.id] || {}; q.texto = ta.value; guardar("respuestas", respuestas); crece(); refrescar(); };
-      tar.appendChild(ta);
-      if (t.decision.siNoDices) tar.appendChild(el("p", "defecto", t.decision.siNoDices));
-      cajaDec.appendChild(tar);
-      setTimeout(crece, 0);
-    });
-    var copiar = el("button", "boton fuerte", "Copiar respuestas"); copiar.type = "button";
-    copiar.onclick = function(){ copiarRespuestas(copiar); };
-    cajaDec.appendChild(copiar);
+    decidirAbajo.forEach(function(t){ cajaDec.appendChild(tarjetaDecision(t)); });
+    cajaDec.appendChild(botonCopiar());
   }
 
   // Lo que le toca a quien lee: por qué, pasos, botones y una casilla que cuenta en el porcentaje.
-  var tocan = todas.filter(function(t){ return t.quien === "tu" && !t.decision && t.estado !== "hecho" && t.estado !== "descartado"; });
+  function tarjetaToca(t){
+    var tar = el("article", "tarjeta"); tar.id = "t-" + t.id;
+    var fila = el("div", "quien");
+    var c = el("input"); c.type = "checkbox"; c.checked = !!marcas[t.id]; c.setAttribute("aria-label", "Hecho: " + t.texto);
+    var cuerpo = el("div");
+    cuerpo.appendChild(el("h3", "", t.texto));
+    var dentro = el("div", "cuerpo-tarjeta"), textos = el("div", "lado"), hacer = el("div", "lado");
+    if (t.estado === "bloqueado" && t.nota) { var p = rico("p", "", t.nota); p.insertBefore(el("span", "estado-palabra parado", "Parado: "), p.firstChild); textos.appendChild(p); }
+    else if (t.nota) textos.appendChild(rico("p", "", t.nota));
+    if (t.porque) textos.appendChild(rico("p", "", t.porque));
+    if (t.pasos && t.pasos.length) { var ol = el("ol"); t.pasos.forEach(function(q){ ol.appendChild(rico("li", "", q)); }); hacer.appendChild(ol); }
+    if (t.acciones && t.acciones.length) {
+      var ac = el("div", "acciones");
+      t.acciones.forEach(function(a){
+        // Lo que se copia no se enseña: solo el nombre del botón.
+        if (a.url && /^(https?:|mailto:|file:)/i.test(a.url)) { var l = el("a", "boton", a.texto); l.href = a.url; l.target = "_blank"; l.rel = "noopener"; ac.appendChild(l); }
+        else if (a.copiar !== undefined) { var b = el("button", "boton", a.texto || "Copiar"); b.type = "button"; b.onclick = function(){ aPortapapeles(String(a.copiar), b, "Copiado"); }; ac.appendChild(b); }
+      });
+      hacer.appendChild(ac);
+    }
+    if (t.dime) hacer.appendChild(rico("p", "dime", t.dime));
+    dentro.appendChild(textos); dentro.appendChild(hacer);
+    cuerpo.appendChild(dentro);
+    function recoger(){ tar.classList.toggle("recogida", !!marcas[t.id]); }
+    c.onchange = function(){ if (c.checked) marcas[t.id] = 1; else delete marcas[t.id]; guardar("marcas", marcas); recoger(); refrescar(); };
+    fila.appendChild(c); fila.appendChild(cuerpo); tar.appendChild(fila);
+    recoger();
+    return tar;
+  }
+  var tocan = todas.filter(function(t){ return t.quien === "tu" && !t.decision && t.estado !== "hecho" && t.estado !== "descartado" && !enArriba(t); });
   if (tocan.length) {
     var cajaToca = $("toca");
-    cajaToca.appendChild(el("h2", "", "Lo que te toca"));
-    tocan.forEach(function(t){
-      var tar = el("article", "tarjeta"); tar.id = "t-" + t.id;
-      var fila = el("div", "quien");
-      var c = el("input"); c.type = "checkbox"; c.checked = !!marcas[t.id]; c.setAttribute("aria-label", "Hecho: " + t.texto);
-      var cuerpo = el("div");
-      cuerpo.appendChild(el("h3", "", t.texto));
-      var dentro = el("div", "cuerpo-tarjeta");
-      if (t.estado === "bloqueado" && t.nota) { var p = rico("p", "", t.nota); p.insertBefore(el("span", "estado-palabra parado", "Parado: "), p.firstChild); dentro.appendChild(p); }
-      else if (t.nota) dentro.appendChild(rico("p", "", t.nota));
-      if (t.porque) dentro.appendChild(rico("p", "", t.porque));
-      if (t.pasos && t.pasos.length) { var ol = el("ol"); t.pasos.forEach(function(q){ ol.appendChild(rico("li", "", q)); }); dentro.appendChild(ol); }
-      if (t.acciones && t.acciones.length) {
-        var ac = el("div", "acciones");
-        t.acciones.forEach(function(a){
-          // Lo que se copia no se enseña: solo el nombre del botón.
-          if (a.url && /^(https?:|mailto:|file:)/i.test(a.url)) { var l = el("a", "boton", a.texto); l.href = a.url; l.target = "_blank"; l.rel = "noopener"; ac.appendChild(l); }
-          else if (a.copiar !== undefined) { var b = el("button", "boton", a.texto || "Copiar"); b.type = "button"; b.onclick = function(){ aPortapapeles(String(a.copiar), b, "Copiado"); }; ac.appendChild(b); }
-        });
-        dentro.appendChild(ac);
-      }
-      if (t.dime) dentro.appendChild(rico("p", "dime", t.dime));
-      cuerpo.appendChild(dentro);
-      function recoger(){ tar.classList.toggle("recogida", !!marcas[t.id]); }
-      c.onchange = function(){ if (c.checked) marcas[t.id] = 1; else delete marcas[t.id]; guardar("marcas", marcas); recoger(); refrescar(); };
-      fila.appendChild(c); fila.appendChild(cuerpo); tar.appendChild(fila);
-      recoger();
-      cajaToca.appendChild(tar);
-    });
+    // Si la página separa lo urgente, lo demás suyo es lo que puede esperar.
+    cajaToca.appendChild(el("h2", "", usaYa ? "Cuando puedas" : "Lo que te toca"));
+    urgentesPrimero(tocan).forEach(function(t){ cajaToca.appendChild(tarjetaToca(t)); });
+  }
+
+  if (arribaYa.length) {
+    var cajaYa = $("ya"), rejilla = el("div", "ya-tarjetas");
+    cajaYa.appendChild(el("h2", "", "Ya, sí o sí"));
+    arribaYa.forEach(function(t){ rejilla.appendChild(t.decision ? tarjetaDecision(t, true) : tarjetaToca(t)); });
+    cajaYa.appendChild(rejilla);
+    if (sobranYa.length) {
+      var abajoDec = sobranYa.filter(function(t){ return t.decision; }).length;
+      var donde = abajoDec === sobranYa.length ? ", en «Lo que tienes que decidir»" : abajoDec ? "" : ", en «Cuando puedas»";
+      cajaYa.appendChild(el("p", "ya-mas", "Y " + sobranYa.length + " más, abajo" + donde + "."));
+    }
+    cajaYa.setAttribute("data-n", String(arribaYa.length));
+    cajaYa.hidden = false;
   }
 
   function filaTarea(t, sinPalabra){
@@ -413,11 +469,16 @@ details.listo .dentro { margin-top:16px; }
     caja.textContent = "";
     caja.appendChild(el("h2", "", "Lo siguiente"));
     var mirables = todas.filter(function(t){ return deLaPersona(t) && queda(t) && t.estado !== "bloqueado" && !marcada(t); });
-    var tuya = mirables.filter(function(t){ return !(t.decision && respondida(t)); })[0];
+    function porHacer(t){ return !(t.decision && respondida(t)); }
+    // Lo que está en «Ya, sí o sí» ya se ve arriba: mientras quede algo ahí, la fila «Tú» lo repetiría.
+    var yaArriba = mirables.filter(function(t){ return enArriba(t) && porHacer(t); }).length;
+    var tuya = urgentesPrimero(mirables.filter(function(t){ return !enArriba(t); })).filter(porHacer)[0];
     var porPasar = mirables.filter(function(t){ return t.decision && respondida(t); });
     var filaTu = el("div", "fila-sig");
     filaTu.appendChild(el("b", "", "Tú"));
-    if (tuya) {
+    if (yaArriba) {
+      filaTu = null;
+    } else if (tuya) {
       filaTu.appendChild(el("span", "que", (tuya.decision ? "Decidir: " : "") + tuya.texto));
       var ir = el("button", "boton fuerte", tuya.decision ? "Ir a la decisión" : "Ir a ese paso");
       ir.type = "button"; ir.onclick = function(){ irA(tuya.id); };
@@ -430,7 +491,7 @@ details.listo .dentro { margin-top:16px; }
     } else {
       filaTu.appendChild(el("span", "que", "Nada ahora mismo. Te aviso aquí cuando te necesite."));
     }
-    caja.appendChild(filaTu);
+    if (filaTu) caja.appendChild(filaTu);
     var mias = todas.filter(function(t){ return !deLaPersona(t) && t.estado === "haciendo"; });
     var quedanMias = todas.filter(function(t){ return !deLaPersona(t) && queda(t); });
     var filaYo = el("div", "fila-sig");

@@ -50,6 +50,11 @@ steps is ceremony.
 
 One HTML file, opened straight in your own browser, never a hosted page:
 
+- Above everything, apart, what only you can do and cannot wait ("Ya, sí o sí", now, no matter
+  what): at most three, with their steps and buttons, and a line saying how many more there are.
+  The rest of what is yours goes under "Cuando puedas" (whenever you can). A task gets there with
+  `"ya": true`, or later with `estado <page> t3=ya` (`t3=noya` takes it back down), and leaves the
+  block once it is done. With no such task the block does not show.
 - On top, the next step: what you have to do, with a button that takes you there, and what the
   agent is doing now. It is worked out from the tasks.
 - A big percentage, one single-colour bar and the number of tasks left, which is the question
@@ -92,7 +97,8 @@ anywhere). Set `GRESSO_REGISTRO` to keep it somewhere else.
 ## How it works
 
 The page carries its data in a JSON block, and a small script (`scripts/gresso.py`) rewrites
-only that block: `crear` (create), `estado` (change states), `parte` (the "where I am" note),
+only that block: `crear` (create), `estado` (change states, and move a task of yours up to what
+cannot wait with `ya` or back down with `noya`), `parte` (the "where I am" note),
 `anadir` (add tasks), `ver` (print the current state as text) and `renovar` (move a page to the
 current template). The agent never loads the
 HTML into its context to update it, so keeping the page current costs almost nothing.

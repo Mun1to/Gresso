@@ -5,6 +5,7 @@
     python gresso.py crear  <salida.html> [--titulo T] [--subtitulo S] [--proyecto P]  < datos.json
     python gresso.py ver    <salida.html>
     python gresso.py estado <salida.html> t3=hecho t4=haciendo "t5=bloqueado:falta la clave"
+    python gresso.py estado <salida.html> t6=ya t7=noya
     python gresso.py parte  <salida.html> "Dónde voy, en dos o tres líneas"
     python gresso.py anadir <salida.html> --fase "Nombre de la fase"      < tareas.json
     python gresso.py renovar <salida.html> [--marca marca.json]
@@ -23,6 +24,9 @@ tareas.json -> la lista de tareas sola, con la misma forma.
 
 Una tarea de quien lee lleva además "quien":"tu", y puede traer "porque", "pasos":[...],
 "acciones":[{"texto":...,"url":...} o {"texto":...,"copiar":...}] y "dime".
+Con "ya":true es de las que tiene que hacer ya, sí o sí: solo puede hacerla quien lee y algo se
+para si no la hace. Sale arriba del todo, aparte, y como mucho tres. estado tN=ya la sube y
+tN=noya la baja; al pasar a hecho sale sola de ese bloque.
 Una decisión lleva "decision":{"opciones":[{"texto":...,"recomendada":true,"detalle":...,
 "noHace":...}],"siNoDices":...,"varias":false}.
 
@@ -41,6 +45,8 @@ import time
 from datetime import datetime
 
 ESTADOS = ("pendiente", "haciendo", "hecho", "bloqueado", "descartado")
+# Lo que le toca a quien lee y no puede esperar sale arriba, aparte. Más de tres ya no es urgente.
+MAX_YA = 3
 MARCA = re.compile(
     r'(<script id="gresso-datos" type="application/json">)(.*?)(</script>)',
     re.DOTALL,
@@ -127,7 +133,32 @@ def numerar(fases):
         # Quien lee es "tu"; sin este campo, la tarea es del agente, como siempre.
         if str(t.get("quien", "")).strip().lower() in ("tu", "tú"):
             t["quien"] = "tu"
+        if "ya" in t:
+            urgente = es_si(t.pop("ya"))
+            if urgente and de_la_persona(t):
+                t["ya"] = True
+            elif urgente:
+                sys.stderr.write('gresso: aviso: %s es del agente y "ya" solo vale en lo que le toca a quien '
+                                 'lee ("quien": "tu"); se lo quito\n' % tid)
     return fases
+
+
+def es_si(valor):
+    return str(valor).strip().lower() in ("1", "true", "si", "sí", "yes")
+
+
+def de_la_persona(tarea):
+    # Igual que en la página: lo suyo es lo que lleva "quien":"tu" y toda decisión.
+    return tarea.get("quien") == "tu" or bool(tarea.get("decision"))
+
+
+def avisar_ya(datos):
+    urgentes = [t for f in datos.get("fases", []) for t in f.get("tareas", [])
+                if t.get("ya") is True and t.get("estado") not in ("hecho", "descartado")]
+    if len(urgentes) > MAX_YA:
+        sys.stderr.write("gresso: aviso: hay %d tareas «ya» sin hacer y arriba solo caben %d (%s); las demás "
+                         "bajan con el resto de lo suyo. Si alguna puede esperar, bájala con estado <ruta> tN=noya\n"
+                         % (len(urgentes), MAX_YA, ", ".join(t.get("id", "?") for t in urgentes[:MAX_YA])))
 
 
 # Algo que parece una contraseña a la vista. Se avisa sin repetirla, ni en la terminal.
@@ -223,6 +254,7 @@ def escribir(ruta, texto):
 
 def guardar(ruta, html, datos):
     avisar_secretos(datos)
+    avisar_ya(datos)
     escribir(ruta, incrustar(html, datos))
     # La página pide este script cada pocos segundos y solo recarga si ha cambiado. Va después
     # del HTML: si fuera antes, la pestaña podría recargar y seguir viendo lo de antes.
@@ -451,7 +483,7 @@ def cmd_ver(ruta):
         print("\n[%s]" % fase.get("nombre", "Tareas"))
         for t in fase.get("tareas", []):
             nota = ("  (%s)" % t["nota"]) if t.get("nota") else ""
-            quien = "tú: " if t.get("quien") == "tu" or t.get("decision") else ""
+            quien = ("tú, ya: " if t.get("ya") is True else "tú: ") if de_la_persona(t) else ""
             print("  %-6s %-11s %s%s%s" % (t.get("id", "?"), t.get("estado", "pendiente"),
                                            quien, t.get("texto", ""), nota))
 
@@ -473,9 +505,18 @@ def cmd_estado(ruta, pares):
         tid, valor = tid.strip(), valor.strip()
         if tid not in indice:
             muere('no hay ninguna tarea con id "%s" (mira "gresso.py ver")' % tid)
-        if valor not in ESTADOS:
-            muere('"%s" no es un estado; los válidos son: %s' % (valor, ", ".join(ESTADOS)))
-        indice[tid]["estado"] = valor
+        if valor == "ya":
+            # No cambia el estado: la sube arriba, a lo que tiene que hacer ya.
+            if not de_la_persona(indice[tid]):
+                muere('%s es del agente: "ya" solo vale en lo que le toca a quien lee ("quien": "tu")' % tid)
+            indice[tid]["ya"] = True
+        elif valor == "noya":
+            indice[tid].pop("ya", None)
+        elif valor not in ESTADOS:
+            muere('"%s" no es un estado; los válidos son: %s (y ya o noya, para subir o bajar lo urgente '
+                  'de quien lee)' % (valor, ", ".join(ESTADOS)))
+        else:
+            indice[tid]["estado"] = valor
         if nota is not None:
             nota = nota.strip()
             if nota:
