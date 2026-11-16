@@ -48,7 +48,8 @@ Cada tarea admite:
   añadan tareas en medio, así que se puede recordar para marcarla después.
 
 Lo de la persona va aparte de lo del agente, en dos columnas en pantalla grande y en una en el
-móvil, y con todo lo que necesita para hacerlo sin preguntar:
+móvil (lo que tiene que decidir, encima y a todo el ancho), y con todo lo que necesita para hacerlo
+sin preguntar:
 
 - `porque` - por qué le toca, en una o dos frases.
 - `pasos` - la lista de pasos numerados.
@@ -82,19 +83,53 @@ campo `decision`:
  "porque": "El lunes tendrás a alguien mirando si algo falla.",
  "decision": {
    "opciones": [
-     {"texto": "Hoy", "recomendada": true, "detalle": "Queda hecho y te lo enseño.",
-      "noHace": "avisar a los clientes, eso va aparte"},
-     {"texto": "El lunes"}
+     {"texto": "Hoy", "icono": "ya", "detalle": "Queda publicado esta tarde y te lo enseño.",
+      "recomendada": true, "porque": "lo que falta ya está probado y el lunes hay otra entrega.",
+      "malo": "Si algo falla, lo veo yo solo hasta el lunes.", "bueno": "Queda hecho hoy.",
+      "cuesta": "Nada.", "noHace": "avisar a los clientes, eso va aparte"},
+     {"texto": "El lunes", "icono": "esperar", "detalle": "Lo dejo listo y lo publico el lunes a primera hora.",
+      "malo": "Tres días más sin la versión nueva.", "bueno": "Hay alguien mirando si algo falla.",
+      "cuesta": "Tres días."}
    ],
    "siNoDices": "Si no me dices nada, espero al lunes."
  }}
 ```
 
-Cada opción lleva su casilla, y la recomendada se dice con palabras: **nunca se deja marcada de
-antemano**. Solo se marca una, salvo con `"varias": true`. Debajo hay una caja «Otra cosa, con tus
-palabras» y un botón «Copiar respuestas», y todo se guarda en su navegador. Si una opción se puede leer
-de dos maneras, di en `noHace` lo que no incluye. Cuando te conteste, ciérrala:
-`estado t3=hecho:"eligió el lunes"`.
+Así se escribe para que se entienda en frío:
+
+- `texto` de la tarea es **la pregunta entera**, en una frase que acaba en «?». `porque` dice por qué hay
+  que decidirlo ahora, y `siNoDices`, qué pasa si no contesta.
+- En cada opción, `texto` es **la palabra** (de una a tres palabras) y `detalle` **la frase**: qué le
+  pasa a quien lee si la elige, con verbo.
+- `malo`, `bueno` y `cuesta`, **una línea cada uno y siempre los tres**, para que las opciones se
+  comparen solas. Si una opción se puede leer de dos maneras, `noHace` dice lo que no incluye.
+- La recomendada lleva `"recomendada": true` y su `porque`, y **nunca se deja marcada de antemano**.
+- `icono`, si quieres, uno de los que trae la plantilla: `si`, `no`, `ya`, `esperar`, `pregunta`,
+  `gente`, `dinero`, `texto`, `igual`, `estrella`, `lapiz`, `flecha`, `escudo`.
+- Mejor tres decisiones abiertas como mucho: lo que puedes decidir tú, lo decides y lo cuentas.
+
+En la página se ve **una decisión cada vez**, a todo el ancho, encima de las dos columnas: arriba la
+pregunta, las opciones como baldosas de palabra y frase (la recomendada lo dice), y al pulsar una sale
+lo malo, lo bueno y lo que cuesta, y por qué es la recomendada. Solo se marca una, salvo con
+`"varias": true`. Debajo, la caja «Otra cosa, con tus palabras»; «Siguiente» pasa a la otra y al final
+sale lo decidido, cada una con su «Cambiar», con **un solo «Copiar respuestas»**. Todo se guarda en
+su navegador, y la pestaña sigue en la misma decisión cuando se pone al día sola. Una decisión con
+`ya` va arriba, sola en su tarjeta.
+
+Cada decisión abierta lleva **una letra** (A, B, C...) y cada opción **un número**, en el orden de la
+página, y así llega el texto copiado: `A. ¿Publico hoy o espero al lunes? → 1 · Hoy`. Si las mismas
+preguntas tienen que ir también por otro sitio (una herramienta que pregunta desde el móvil, por
+ejemplo), sácalas con `decisiones`: las da con su letra, en el mismo orden y con las opciones
+numeradas igual, para que «A uno» quiera decir lo mismo en los dos sitios.
+
+```bash
+python3 "$GRESSO" decisiones "<ruta>"
+# [{"letra": "A", "id": "t3", "title": "¿Publico hoy...?", "context": "...",
+#   "options": [{"text": "Hoy", "detail": "...", "recommended": true}, ...]}]
+```
+
+Cuando te conteste, ciérrala: `estado t3=hecho:"eligió el lunes"`. Las letras de las que quedan se
+corren, así que si vuelves a preguntar por otro sitio, sácalas otra vez.
 
 Lo `descartado` sale del total: no es trabajo que quede, y dejarlo contando hunde el porcentaje
 sin motivo. Se queda escrito y tachado, al final con lo hecho, porque saber qué se decidió no hacer es información.
@@ -184,6 +219,9 @@ EOF
 
 # recordar qué ids hay, sin cargar el HTML en el contexto
 python3 "$GRESSO" ver "<ruta>"
+
+# las decisiones abiertas, con su letra y en el orden de la página
+python3 "$GRESSO" decisiones "<ruta>"
 ```
 
 Cada uno de esos comandos reescribe también **la fecha y la hora de arriba**, que es lo único
@@ -219,6 +257,9 @@ interno, no se sube a un repositorio público.
   repetiría. El `parte` va debajo de lo del agente.
 - **La cifra grande del porcentaje, una barra de un solo color y una frase**: «31 de 60 tareas
   hechas. Quedan 29.», que es la pregunta de verdad.
+- **Lo que tiene que decidir, una cada vez y a todo el ancho**, con las opciones como baldosas de
+  palabra y frase, lo malo, lo bueno y lo que cuesta de la elegida, «Siguiente» y un solo «Copiar
+  respuestas» al final.
 - **Lo parado va primero** en lo que hace el agente, con lo que falta para desbloquearlo.
 - **El estado es una palabra suelta en negrita** («Ahora», «Parado») y una casilla. Sin fichas, sin
   puntos de color, sin nada que lata y sin mini gráficos: la página no se explica a sí misma.

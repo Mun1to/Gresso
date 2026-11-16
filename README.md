@@ -65,8 +65,13 @@ One HTML file, opened straight in your own browser, never a hosted page:
 - What you have to do goes apart from what the agent does, in two columns on a big screen and one
   on a phone: why, numbered steps, buttons to open a link or copy a value, what to say when you
   finish, and a checkbox saved in your browser that counts towards the percentage.
-- Decisions live on the same page: a checkbox per option, the recommended one said in words and
-  never preselected, a box for your own answer, and a "copy answers" button to paste in the chat.
+- Decisions live on the same page, one at a time and full width: the whole question on top with
+  why now and what happens if you do not answer; the options as tiles with a word and a sentence,
+  the recommended one said in words and never preselected; once you pick one, its downside, upside
+  and cost, one line each. Next moves on, a box takes your own answer, and at the end a single
+  "copy answers" button gives you `A. question → 1 · option` lines to paste in the chat. Each open
+  decision has a letter and each option a number, and `decisiones` prints them in the same order,
+  so the same questions can be asked somewhere else (on your phone) and "A one" means the same.
 - A short "where I am" note the agent keeps up to date, in two or three lines.
 - Tasks grouped in phases, each with its count.
 - What is done is folded at the end, with its count: the question when you open the page is what
@@ -99,9 +104,10 @@ anywhere). Set `GRESSO_REGISTRO` to keep it somewhere else.
 The page carries its data in a JSON block, and a small script (`scripts/gresso.py`) rewrites
 only that block: `crear` (create), `estado` (change states, and move a task of yours up to what
 cannot wait with `ya` or back down with `noya`), `parte` (the "where I am" note),
-`anadir` (add tasks), `ver` (print the current state as text) and `renovar` (move a page to the
-current template). The agent never loads the
-HTML into its context to update it, so keeping the page current costs almost nothing.
+`anadir` (add tasks), `ver` (print the current state as text), `renovar` (move a page to the
+current template) and `decisiones` (print the open decisions with their letters, in page order).
+The agent never loads the HTML into its context to update it, so keeping the page current costs
+almost nothing.
 
 Task ids never change once given, even when new tasks are added in the middle, so the agent
 can remember them and mark the right one later.

@@ -9,6 +9,7 @@
     python gresso.py parte  <salida.html> "Dónde voy, en dos o tres líneas"
     python gresso.py anadir <salida.html> --fase "Nombre de la fase"      < tareas.json
     python gresso.py renovar <salida.html> [--marca marca.json]
+    python gresso.py decisiones <salida.html>
 
 crear y renovar admiten --marca marca.json: {"nombre":...,"logo":...,"logoOscuro":...,
 "mascota":...,"pixelada":true,"colores":{"acento":"#3E5BA9",...},"oscuro":{...},"letra":...,
@@ -27,8 +28,11 @@ Una tarea de quien lee lleva además "quien":"tu", y puede traer "porque", "paso
 Con "ya":true es de las que tiene que hacer ya, sí o sí: solo puede hacerla quien lee y algo se
 para si no la hace. Sale arriba del todo, aparte, y como mucho tres. estado tN=ya la sube y
 tN=noya la baja; al pasar a hecho sale sola de ese bloque.
-Una decisión lleva "decision":{"opciones":[{"texto":...,"recomendada":true,"detalle":...,
-"noHace":...}],"siNoDices":...,"varias":false}.
+Una decisión lleva "decision":{"opciones":[{"texto":...,"detalle":...,"recomendada":true,
+"porque":...,"malo":...,"bueno":...,"cuesta":...,"noHace":...,"icono":...}],"siNoDices":...,
+"varias":false}. La página enseña una abierta cada vez, con las opciones como baldosas, y
+decisiones imprime las abiertas, con su letra y en el orden de la página, para preguntarlas
+también por otro sitio (el móvil) con los mismos números.
 
 Toda orden que cambia algo escribe también <salida.html>.version.js: la pestaña abierta lo
 pide cada pocos segundos y se pone al día sola, sin pulsar F5.
@@ -130,6 +134,7 @@ def numerar(fases):
         # Una decisión sin opciones no se puede contestar en la página: mejor saberlo ahora.
         if t.get("decision") is not None and not (t["decision"] or {}).get("opciones"):
             sys.stderr.write('gresso: aviso: la decisión "%s" no trae opciones\n' % t.get("texto", ""))
+        avisar_decision(tid, t.get("decision"))
         # Quien lee es "tu"; sin este campo, la tarea es del agente, como siempre.
         if str(t.get("quien", "")).strip().lower() in ("tu", "tú"):
             t["quien"] = "tu"
@@ -141,6 +146,32 @@ def numerar(fases):
                 sys.stderr.write('gresso: aviso: %s es del agente y "ya" solo vale en lo que le toca a quien '
                                  'lee ("quien": "tu"); se lo quito\n' % tid)
     return fases
+
+
+ICONOS = ("si", "no", "ya", "esperar", "pregunta", "gente", "dinero", "texto", "igual", "estrella",
+          "lapiz", "flecha", "escudo")
+
+
+def avisar_decision(tid, decision):
+    """Lo que hace una decisión difícil de contestar, dicho al crearla y no cuando ya la está leyendo."""
+    if not isinstance(decision, dict):
+        return
+    opciones = [o for o in decision.get("opciones") or [] if isinstance(o, dict)]
+    recomendadas = [o for o in opciones if o.get("recomendada")]
+    if len(recomendadas) > 1:
+        sys.stderr.write("gresso: aviso: %s recomienda %d opciones; se recomienda una, o ninguna\n"
+                         % (tid, len(recomendadas)))
+    for o in recomendadas:
+        if not o.get("porque"):
+            sys.stderr.write('gresso: aviso: %s recomienda "%s" sin decir por qué ("porque")\n'
+                             % (tid, o.get("texto", "")))
+    if len(opciones) > 6:
+        sys.stderr.write("gresso: aviso: %s tiene %d opciones; con más de seis cuesta comparar, y no caben en "
+                         "las herramientas que preguntan desde el móvil\n" % (tid, len(opciones)))
+    for o in opciones:
+        if o.get("icono") and o["icono"] not in ICONOS:
+            sys.stderr.write('gresso: aviso: %s usa el icono "%s", que no existe (hay: %s)\n'
+                             % (tid, o["icono"], ", ".join(ICONOS)))
 
 
 def es_si(valor):
@@ -201,7 +232,7 @@ def textos_a_la_vista(datos):
             decision = t.get("decision") or {}
             yield nombre, decision.get("siNoDices")
             for opcion in decision.get("opciones") or []:
-                for campo in ("texto", "detalle", "noHace"):
+                for campo in ("texto", "detalle", "porque", "malo", "bueno", "cuesta", "noHace"):
                     yield nombre, opcion.get(campo)
 
 
@@ -575,6 +606,58 @@ def cmd_anadir(ruta, resto):
     print("%d tarea(s) añadida(s) | %d%% (%d de %d)" % (len(nuevas), pct, len(hechas), len(utiles)))
 
 
+# ---------------------------------------------------------------------- decisiones
+LETRAS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+
+def orden_decisiones(datos):
+    """Las decisiones abiertas en el orden de la página, que es el de sus letras: primero las de
+    arriba («ya»), y luego las de abajo, con las urgentes que no cupieron arriba delante."""
+    todas = [t for f in datos.get("fases", []) for t in f.get("tareas", [])]
+
+    def abierta(t):
+        return t.get("estado") not in ("hecho", "descartado")
+
+    def urgente(t):
+        return t.get("ya") is True and (t.get("quien") == "tu" or isinstance(t.get("decision"), dict))
+
+    arriba = [t for t in todas if urgente(t) and abierta(t)][:MAX_YA]
+    abajo = [t for t in todas if isinstance(t.get("decision"), dict) and abierta(t)
+             and not any(t is a for a in arriba)]
+    abajo = [t for t in abajo if urgente(t)] + [t for t in abajo if not urgente(t)]
+    return [t for t in arriba if isinstance(t.get("decision"), dict)] + abajo
+
+
+def plano(texto):
+    return escape_html.unescape(re.sub(r"<[^>]+>", "", str(texto or ""))).strip()
+
+
+def cmd_decisiones(ruta):
+    """Las mismas preguntas que enseña la página, para hacerlas también por otro sitio (el móvil):
+    con su letra, en el mismo orden y con las opciones numeradas igual, para que «A uno» sea lo mismo."""
+    _, datos = extraer(ruta)
+    salida = []
+    for i, t in enumerate(orden_decisiones(datos)):
+        decision = t["decision"]
+        contexto = " ".join(x for x in (plano(t.get("porque")), plano(decision.get("siNoDices"))) if x)
+        pregunta = {"letra": LETRAS[i] if i < len(LETRAS) else str(i + 1), "id": t.get("id"),
+                    "title": t.get("texto", "")}
+        if contexto:
+            pregunta["context"] = contexto
+        opciones = []
+        for o in decision.get("opciones") or []:
+            o = o if isinstance(o, dict) else {"texto": str(o)}
+            opcion = {"text": o.get("texto", "")}
+            if o.get("detalle"):
+                opcion["detail"] = plano(o["detalle"])
+            if o.get("recomendada"):
+                opcion["recommended"] = True
+            opciones.append(opcion)
+        pregunta["options"] = opciones
+        salida.append(pregunta)
+    print(json.dumps(salida, ensure_ascii=False, indent=2))
+
+
 # ------------------------------------------------------------------------- renovar
 def cmd_renovar(ruta, resto):
     plantilla = marca = None
@@ -618,8 +701,10 @@ def main():
         cmd_anadir(ruta, resto)
     elif orden == "renovar":
         cmd_renovar(ruta, resto)
+    elif orden == "decisiones":
+        cmd_decisiones(ruta)
     else:
-        muere('orden desconocida "%s" (crear, ver, estado, parte, anadir, renovar)' % orden)
+        muere('orden desconocida "%s" (crear, ver, estado, parte, anadir, renovar, decisiones)' % orden)
 
 
 if __name__ == "__main__":

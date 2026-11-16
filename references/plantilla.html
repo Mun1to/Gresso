@@ -77,19 +77,57 @@ a { color:var(--acento-texto); }
 .tarjeta li { margin:0 0 6px; }
 .dime { color:var(--tinta); font-weight:600; margin:10px 0 0 !important; }
 .acciones { display:flex; flex-wrap:wrap; gap:10px; margin:12px 0 0; }
-.boton { display:inline-flex; align-items:center; justify-content:center; min-height:48px; padding:8px 18px; border-radius:8px; border:0; font:700 1rem/1.2 var(--letra-titulos); cursor:pointer; text-decoration:none; background:var(--boton-suave); color:var(--boton-suave-texto); transition:filter .18s ease; }
+.boton { display:inline-flex; align-items:center; justify-content:center; min-height:48px; padding:8px 18px; border-radius:8px; border:0; font:700 1rem/1.2 var(--letra-titulos); cursor:pointer; white-space:nowrap; text-decoration:none; background:var(--boton-suave); color:var(--boton-suave-texto); transition:filter .18s ease; }
 .boton.fuerte { background:var(--acento); color:var(--sobre-acento); }
 .boton:hover { filter:brightness(1.12); }
-.boton:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible { outline:3px solid var(--acento-texto); outline-offset:2px; }
+.boton:focus-visible, .baldosa:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible { outline:3px solid var(--acento-texto); outline-offset:2px; }
 input[type=checkbox] { appearance:none; -webkit-appearance:none; width:26px; height:26px; margin:0; border:2px solid var(--caja); border-radius:5px; background:transparent; cursor:pointer; flex:none; display:grid; place-items:center; }
 input[type=checkbox]:checked { background:var(--verde); border-color:var(--verde); }
 input[type=checkbox]:checked::after { content:""; width:7px; height:13px; border:solid #fff; border-width:0 3px 3px 0; transform:translateY(-2px) rotate(45deg); }
 .recogida h3 { text-decoration:line-through; color:var(--suave); }
 .recogida .cuerpo-tarjeta { display:none; }
-.opcion { display:grid; grid-template-columns:26px minmax(0,1fr); gap:0 12px; padding:9px 0; cursor:pointer; align-items:start; }
-.opcion .nom { color:var(--tinta); font-weight:600; }
-.opcion .det { display:block; font-size:1rem; }
-.opcion .rec { color:var(--acento-texto); font-weight:700; }
+/* Lo que hay que decidir: una abierta cada vez. Arriba la pregunta, por qué ahora y qué pasa si no contesta;
+   las opciones como baldosas de palabra y frase; al pulsar una, lo malo, lo bueno y lo que cuesta, una línea cada uno. */
+/* Va a todo el ancho, encima de las dos columnas: en una columna estrecha, las baldosas apiladas dejaban un hueco al lado. */
+#decidir:not(:empty) { margin-top:44px; }
+#decidir .tarjeta { margin-bottom:0; }
+.tarjeta.decide { container-type:inline-size; }
+.tarjeta.decide h3 { font-size:clamp(1.25rem, 1.6vw, 1.5rem); font-weight:800; line-height:1.3; margin:0 0 6px; }
+#decidido h3 { font-size:1.375rem; font-weight:800; }
+.tarjeta .cuenta { color:var(--suave); font-weight:600; margin:0 0 4px; }
+.tarjeta .porque { margin:0 0 4px; }
+.tarjeta .pista { color:var(--suave); margin:8px 0 0; }
+.baldosas { display:grid; grid-template-columns:minmax(0,1fr); gap:12px; margin:16px 0 4px; }
+@container (min-width:760px) {
+  .baldosas { grid-template-columns:repeat(3, minmax(0,1fr)); }
+  .baldosas.n2, .baldosas.n4 { grid-template-columns:repeat(2, minmax(0,1fr)); }
+}
+.baldosa { position:relative; display:flex; flex-direction:column; align-items:flex-start; width:100%; text-align:left; font:inherit; color:var(--tinta); cursor:pointer; background:var(--card); border:2px solid var(--linea); border-radius:8px; padding:14px 48px 14px 16px; transition:background .15s ease, border-color .15s ease; }
+@media (hover:hover) { .baldosa:hover { border-color:var(--acento-texto); } }
+.baldosa svg { width:24px; height:24px; color:var(--acento-texto); display:block; margin-bottom:8px; }
+.baldosa .palabra { display:block; font-family:var(--letra-titulos); font-size:1.1875rem; font-weight:800; line-height:1.25; }
+.baldosa .frase { display:block; color:var(--suave); font-size:1rem; line-height:1.45; margin-top:4px; }
+.baldosa .rec { display:block; color:var(--acento-texto); font-weight:700; font-size:1rem; margin-top:8px; }
+.baldosa::after { content:""; position:absolute; right:14px; top:14px; width:22px; height:22px; border-radius:50%; border:2px solid var(--caja); }
+.baldosas.varias .baldosa::after { border-radius:5px; }
+.baldosa[aria-pressed="true"] { background:var(--acento); border-color:var(--acento); color:var(--sobre-acento); }
+.baldosa[aria-pressed="true"] svg, .baldosa[aria-pressed="true"] .frase, .baldosa[aria-pressed="true"] .rec { color:var(--sobre-acento); }
+.baldosa[aria-pressed="true"]::after { border-color:var(--sobre-acento); background:radial-gradient(circle, var(--sobre-acento) 0 5px, transparent 6px); }
+.baldosas.varias .baldosa[aria-pressed="true"]::after { background:linear-gradient(var(--sobre-acento), var(--sobre-acento)) center / 10px 10px no-repeat; }
+.elegida-nombre { color:var(--tinta); font-weight:800; margin:14px 0 4px !important; }
+.porque-rec { margin:12px 0 8px !important; }
+.porque-rec b { color:var(--acento-texto); }
+.ficha { display:grid; gap:6px; margin:8px 0 12px; }
+.ficha div { display:grid; grid-template-columns:7rem minmax(0,1fr); gap:10px; }
+.ficha dt { color:var(--tinta); font-weight:700; }
+.ficha dd { margin:0; }
+.ficha .m dt { color:var(--rojo); }
+.ficha .b dt { color:var(--verde); }
+@container (max-width:520px) { .ficha div { grid-template-columns:5.75rem minmax(0,1fr); } }
+.resumen { list-style:none; margin:8px 0 0; padding:0; display:grid; gap:16px; }
+.resumen li { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:14px; align-items:center; margin:0; }
+.resumen b { display:block; }
+.resumen .vacia { color:var(--suave); }
 textarea { display:block; width:100%; min-height:48px; margin-top:8px; padding:10px 12px; border:2px solid var(--linea); border-radius:8px; background:transparent; color:var(--tinta); font:inherit; resize:none; overflow:hidden; }
 textarea::placeholder { color:var(--suave); opacity:1; }
 .defecto { font-size:1rem; margin:8px 0 0 !important; }
@@ -143,8 +181,10 @@ details.listo .dentro { margin-top:16px; }
     </section>
   </div>
 
+  <section class="seccion" id="decidir"></section>
+
   <div class="columnas sola" id="columnas">
-    <div id="col-tu"><section class="seccion" id="decidir"></section><section class="seccion" id="toca"></section></div>
+    <div id="col-tu"><section class="seccion" id="toca"></section></div>
     <div id="col-yo"><section class="seccion" id="hago"></section></div>
   </div>
   <section id="listo"></section>
@@ -285,28 +325,6 @@ details.listo .dentro { margin-top:16px; }
     else reserva();
   }
 
-  // Lo que hay que decidir: casilla por opción, nada marcado de antemano.
-  function eleccion(t){
-    var r = respuestas[t.id] || {};
-    return r.opciones ? r.opciones.slice() : (typeof r.opcion === "number" ? [r.opcion] : []);
-  }
-  function respondida(t){ var r = respuestas[t.id] || {}; return eleccion(t).length > 0 || !!(r.texto && r.texto.trim()); }
-  var decisiones = todas.filter(function(t){ return t.decision && queda(t); });
-  function copiarRespuestas(boton){
-    var lineas = decisiones.map(function(t, i){
-      var r = respuestas[t.id] || {}, ops = t.decision.opciones || [];
-      var partes = eleccion(t).map(function(n){ return ops[n] && ops[n].texto; }).filter(Boolean);
-      if (r.texto && r.texto.trim()) partes.push("con mis palabras: " + r.texto.trim());
-      return (i + 1) + ". " + t.texto + " " + (partes.length ? partes.join(", ") : "(sin responder)");
-    });
-    aPortapapeles(lineas.join("\n"), boton, "Copiado, pégamelo en el chat");
-  }
-  function botonCopiar(){
-    var b = el("button", "boton fuerte", "Copiar respuestas"); b.type = "button";
-    b.onclick = function(){ copiarRespuestas(b); };
-    return b;
-  }
-
   // Lo que tiene que hacer ya, sí o sí: solo puede hacerlo quien lee y algo se para si no lo hace.
   // Va arriba del todo y aparte. Como mucho tres; las demás bajan, las primeras, a su sitio de siempre.
   function esYa(t){ return t.ya === true && deLaPersona(t); }
@@ -316,51 +334,158 @@ details.listo .dentro { margin-top:16px; }
   function urgentesPrimero(lista){ return lista.filter(esYa).concat(lista.filter(function(t){ return !esYa(t); })); }
   var usaYa = todas.some(esYa);
 
-  function tarjetaDecision(t, conCopiar){
-    var tar = el("article", "tarjeta"); tar.id = "t-" + t.id;
-    tar.appendChild(el("h3", "", t.texto));
-    var dentro = el("div", "cuerpo-tarjeta"), textos = el("div", "lado"), hacer = el("div", "lado");
-    if (t.porque) textos.appendChild(rico("p", "", t.porque));
-    var cajas = [];
-    (t.decision.opciones || []).forEach(function(o, i){
-      var lab = el("label", "opcion");
-      var inp = el("input"); inp.type = "checkbox"; inp.checked = eleccion(t).indexOf(i) >= 0;
-      cajas.push(inp);
-      inp.onchange = function(){
-        var r = respuestas[t.id] = respuestas[t.id] || {};
-        if (t.decision.varias) {
-          r.opciones = cajas.reduce(function(a, c, n){ if (c.checked) a.push(n); return a; }, []);
-        } else {
-          cajas.forEach(function(c){ if (c !== inp) c.checked = false; });
-          if (inp.checked) r.opcion = i; else delete r.opcion;
-        }
-        guardar("respuestas", respuestas); refrescar();
-      };
-      var cuerpo = el("span");
-      cuerpo.appendChild(el("span", "nom", o.texto));
-      if (o.recomendada) cuerpo.appendChild(el("span", "rec", ". La que te recomiendo"));
-      if (o.detalle) cuerpo.appendChild(el("span", "det", o.detalle));
-      if (o.noHace) cuerpo.appendChild(el("span", "det", "No hace: " + o.noHace));
-      lab.appendChild(inp); lab.appendChild(cuerpo); hacer.appendChild(lab);
+  // Lo que hay que decidir: una abierta cada vez, con sus baldosas, y nada marcado de antemano.
+  // Cada decisión lleva su letra y cada opción su número, en el orden en que salen en la página, para
+  // que «A uno» quiera decir lo mismo aquí, dictado o en otra herramienta que pregunte lo mismo.
+  function eleccion(t){
+    var r = respuestas[t.id] || {};
+    return r.opciones ? r.opciones.slice() : (typeof r.opcion === "number" ? [r.opcion] : []);
+  }
+  function respondida(t){ var r = respuestas[t.id] || {}; return eleccion(t).length > 0 || !!(r.texto && r.texto.trim()); }
+  var decisiones = todas.filter(function(t){ return t.decision && queda(t); });
+  var decidirAbajo = urgentesPrimero(decisiones.filter(function(t){ return !enArriba(t); }));
+  var ordenDec = arribaYa.filter(function(t){ return t.decision; }).concat(decidirAbajo);
+  var LETRAS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  function letra(t){ var i = ordenDec.indexOf(t); return LETRAS[i] || String(i + 1); }
+  function elegidas(t){
+    var ops = t.decision.opciones || [];
+    return eleccion(t).filter(function(n){ return ops[n]; }).map(function(n){ return (n + 1) + " · " + ops[n].texto; }).join(", ");
+  }
+  function copiarRespuestas(boton){
+    var lineas = [];
+    ordenDec.forEach(function(t){
+      var r = respuestas[t.id] || {}, propias = r.texto && r.texto.trim(), suyas = elegidas(t);
+      lineas.push(letra(t) + ". " + t.texto + " → " + (suyas || (propias ? "con mis palabras" : "sin contestar")));
+      if (propias) lineas.push("   Con mis palabras: " + propias);
     });
+    aPortapapeles(lineas.join("\n"), boton, "Copiado, pégamelo en el chat");
+  }
+  function botonCopiar(fuerte){
+    var b = el("button", "boton" + (fuerte ? " fuerte" : ""), "Copiar respuestas"); b.type = "button";
+    b.onclick = function(){ copiarRespuestas(b); };
+    return b;
+  }
+  // Los dibujos de las baldosas son nuestros y van aquí: la página no descarga nada.
+  var IC = {
+    si:'<polyline points="4 12.5 9.5 18 20 6.5"/>', no:'<path d="M6 6l12 12M18 6L6 18"/>', ya:'<path d="M7 4.5v15l12-7.5z"/>',
+    esperar:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+    pregunta:'<circle cx="12" cy="12" r="9"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.4c-.7.3-1 .8-1 1.5v.7"/><path d="M12 17h.01"/>',
+    gente:'<circle cx="9" cy="8" r="3.5"/><path d="M3 20c.4-3.4 2.9-5.5 6-5.5s5.6 2.1 6 5.5"/><path d="M15.5 4.8a3.5 3.5 0 0 1 0 6.4M17.5 14.8c2 .7 3.2 2.5 3.5 5.2"/>',
+    dinero:'<circle cx="12" cy="12" r="9"/><path d="M15 8.6a4 4 0 1 0 0 6.8M7.5 10.6h5.5M7.5 13.4h5.5"/>',
+    texto:'<path d="M5 6h14M12 6v13M9 19h6"/>', igual:'<path d="M5 9h14M5 15h14"/>',
+    estrella:'<path d="M12 3.5l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6-4.5-4.1 6-.7z"/>',
+    lapiz:'<path d="M4 20l1-4.5L16 4.5l3.5 3.5L8.5 19z"/><path d="M13.5 7l3.5 3.5"/>', flecha:'<path d="M4 12h15M13 6l6 6-6 6"/>',
+    escudo:'<path d="M12 3l8 3v6c0 4.6-3.3 7.9-8 9-4.7-1.1-8-4.4-8-9V6z"/>'
+  };
+  function icono(nombre){
+    if (!IC.hasOwnProperty(nombre)) return null;
+    var s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    s.setAttribute("viewBox", "0 0 24 24"); s.setAttribute("fill", "none"); s.setAttribute("stroke", "currentColor"); s.setAttribute("stroke-width", "2");
+    s.setAttribute("stroke-linecap", "round"); s.setAttribute("stroke-linejoin", "round"); s.setAttribute("aria-hidden", "true");
+    s.innerHTML = IC[nombre];
+    return s;
+  }
+  function elegir(t, i){
+    var r = respuestas[t.id] = respuestas[t.id] || {}, ya = eleccion(t), k = ya.indexOf(i);
+    if (t.decision.varias) { if (k >= 0) ya.splice(k, 1); else ya.push(i); r.opciones = ya.sort(function(a, b){ return a - b; }); delete r.opcion; }
+    else { if (k >= 0) delete r.opcion; else r.opcion = i; delete r.opciones; }
+    guardar("respuestas", respuestas);
+  }
+  function mayuscula(x){ x = String(x || ""); return x.charAt(0).toUpperCase() + x.slice(1); }
+  // Lo malo, lo bueno y lo que cuesta de la elegida, una línea cada uno, y por qué es la recomendada.
+  function fichaDe(o, i, conNombre){
+    var caja = el("div");
+    if (conNombre) caja.appendChild(el("p", "elegida-nombre", (i + 1) + " · " + o.texto));
+    if (o.recomendada && o.porque) { var p = el("p", "porque-rec"); p.appendChild(el("b", "", "Por qué te la recomiendo: ")); p.appendChild(document.createTextNode(o.porque)); caja.appendChild(p); }
+    var dl = el("dl", "ficha");
+    [["m", "Lo malo", o.malo], ["b", "Lo bueno", o.bueno], ["", "Te cuesta", o.cuesta], ["", "No hace", mayuscula(o.noHace)]].forEach(function(f){
+      if (!f[2]) return;
+      var fila = el("div", f[0]); fila.appendChild(el("dt", "", f[1])); fila.appendChild(el("dd", "", f[2])); dl.appendChild(fila);
+    });
+    if (dl.children.length) caja.appendChild(dl);
+    return caja;
+  }
+  // Una tarjeta de decisión: «cuenta» es la línea de arriba, «pie» pone los botones y «repintar» la vuelve a dibujar.
+  function tarjetaDecision(t, cuenta, pie, repintar){
+    var tar = el("article", "tarjeta decide"); tar.id = "t-" + t.id;
+    tar.appendChild(el("p", "cuenta", cuenta));
+    tar.appendChild(el("h3", "", t.texto));
+    if (t.porque) tar.appendChild(rico("p", "porque", t.porque));
+    var ops = t.decision.opciones || [], marcadas = eleccion(t);
+    if (t.decision.varias) tar.appendChild(el("p", "pista", "Puedes marcar más de una."));
+    var rejilla = el("div", "baldosas n" + ops.length + (t.decision.varias ? " varias" : ""));
+    rejilla.setAttribute("role", "group"); rejilla.setAttribute("aria-label", "Opciones");
+    ops.forEach(function(o, i){
+      var b = el("button", "baldosa"); b.type = "button"; b.setAttribute("aria-pressed", String(marcadas.indexOf(i) >= 0));
+      var dibujo = icono(o.icono); if (dibujo) b.appendChild(dibujo);
+      b.appendChild(el("span", "palabra", (i + 1) + " · " + o.texto));
+      if (o.detalle) b.appendChild(el("span", "frase", o.detalle));
+      if (o.recomendada) b.appendChild(el("span", "rec", "Te la recomiendo"));
+      b.onclick = function(){ elegir(t, i); repintar(); refrescar(); };
+      rejilla.appendChild(b);
+    });
+    tar.appendChild(rejilla);
+    marcadas.forEach(function(i){ if (ops[i]) tar.appendChild(fichaDe(ops[i], i, marcadas.length > 1)); });
+    if (!marcadas.length && ops.some(function(o){ return o.malo || o.bueno || o.cuesta; })) tar.appendChild(el("p", "pista", "Pulsa una para ver lo malo, lo bueno y lo que te cuesta."));
     var r = respuestas[t.id] || {};
     var ta = el("textarea"); ta.id = "r-" + t.id; ta.rows = 1; ta.placeholder = "Otra cosa, con tus palabras"; ta.setAttribute("aria-label", "Otra cosa, con tus palabras"); ta.value = r.texto || "";
     function crece(){ ta.style.height = "auto"; ta.style.height = ta.scrollHeight + 4 + "px"; }
-    ta.oninput = function(){ var q = respuestas[t.id] = respuestas[t.id] || {}; q.texto = ta.value; guardar("respuestas", respuestas); crece(); refrescar(); };
-    hacer.appendChild(ta);
-    if (t.decision.siNoDices) hacer.appendChild(el("p", "defecto", t.decision.siNoDices));
-    if (conCopiar) { var fila = el("div", "acciones"); fila.appendChild(botonCopiar()); hacer.appendChild(fila); }
-    dentro.appendChild(textos); dentro.appendChild(hacer); tar.appendChild(dentro);
+    ta.oninput = function(){
+      var q = respuestas[t.id] = respuestas[t.id] || {}; q.texto = ta.value; guardar("respuestas", respuestas); crece(); refrescar();
+      var sigue = tar.querySelector(".avanza"); if (sigue) sigue.classList.toggle("fuerte", respondida(t));
+    };
+    tar.appendChild(ta);
+    if (t.decision.siNoDices) tar.appendChild(el("p", "defecto", t.decision.siNoDices));
+    pie(tar);
     setTimeout(crece, 0);
     return tar;
   }
-  var decidirAbajo = urgentesPrimero(decisiones.filter(function(t){ return !enArriba(t); }));
-  if (decidirAbajo.length) {
-    var cajaDec = $("decidir");
-    cajaDec.appendChild(el("h2", "", "Lo que tienes que decidir"));
-    decidirAbajo.forEach(function(t){ cajaDec.appendChild(tarjetaDecision(t)); });
-    cajaDec.appendChild(botonCopiar());
+
+  // Abajo, en «Lo que tienes que decidir», una cada vez: «Siguiente» para pasar y, al final, lo decidido y un solo «Copiar».
+  var pasoDec = leer("paso", null);
+  function irPaso(id){ pasoDec = id; guardar("paso", id); pintarDecidir(); var c = $("decidir"); if (c.getBoundingClientRect().top < 0) c.scrollIntoView({behavior:"smooth", block:"start"}); }
+  function pintarDecidir(){
+    var caja = $("decidir"), n = decidirAbajo.length;
+    caja.textContent = "";
+    if (!n) return;
+    caja.appendChild(el("h2", "", "Lo que tienes que decidir"));
+    var k = -1;
+    for (var j = 0; j < n; j++) if (decidirAbajo[j].id === pasoDec) k = j;
+    if (pasoDec === "fin" && n > 1) k = n;
+    if (k < 0) { k = 0; for (j = 0; j < n; j++) if (!respondida(decidirAbajo[j])) { k = j; break; } }
+    if (k === n) { caja.appendChild(tarjetaDecidido()); return; }
+    var t = decidirAbajo[k];
+    // La que se ve se queda delante hasta que se pase: si no, al contestarla saltaría sola a la siguiente.
+    if (pasoDec !== t.id) { pasoDec = t.id; guardar("paso", t.id); }
+    caja.appendChild(tarjetaDecision(t, "Decisión " + letra(t) + (n > 1 ? " · " + (k + 1) + " de " + n : ""), function(tar){
+      var fila = el("div", "acciones");
+      if (k > 0) { var atras = el("button", "boton", "Atrás"); atras.type = "button"; atras.onclick = function(){ irPaso(decidirAbajo[k - 1].id); }; fila.appendChild(atras); }
+      var sigue;
+      if (n === 1) sigue = botonCopiar(respondida(t));
+      else { sigue = el("button", "boton" + (respondida(t) ? " fuerte" : ""), k === n - 1 ? "Ver lo que he decidido" : "Siguiente"); sigue.type = "button"; sigue.onclick = function(){ irPaso(k === n - 1 ? "fin" : decidirAbajo[k + 1].id); }; }
+      sigue.classList.add("avanza");
+      fila.appendChild(sigue); tar.appendChild(fila);
+    }, pintarDecidir));
   }
+  function tarjetaDecidido(){
+    var tar = el("article", "tarjeta"); tar.id = "decidido";
+    tar.appendChild(el("h3", "", "Lo que has decidido"));
+    var ol = el("ol", "resumen");
+    ordenDec.forEach(function(t){
+      var li = el("li"), txt = el("div"), r = respuestas[t.id] || {}, propias = r.texto && r.texto.trim(), suyas = elegidas(t);
+      txt.appendChild(el("b", "", letra(t) + ". " + t.texto));
+      if (suyas) txt.appendChild(el("span", "", suyas));
+      if (propias) { if (suyas) txt.appendChild(el("br")); txt.appendChild(el("span", "", "Con tus palabras: " + propias)); }
+      if (!suyas && !propias) txt.appendChild(el("span", "vacia", "Sin contestar"));
+      var cambiar = el("button", "boton", "Cambiar"); cambiar.type = "button";
+      cambiar.onclick = function(){ if (decidirAbajo.indexOf(t) >= 0) irPaso(t.id); else irA(t.id); };
+      li.appendChild(txt); li.appendChild(cambiar); ol.appendChild(li);
+    });
+    tar.appendChild(ol);
+    var fila = el("div", "acciones"); fila.appendChild(botonCopiar(true)); tar.appendChild(fila);
+    return tar;
+  }
+  pintarDecidir();
 
   // Lo que le toca a quien lee: por qué, pasos, botones y una casilla que cuenta en el porcentaje.
   function tarjetaToca(t){
@@ -400,10 +525,17 @@ details.listo .dentro { margin-top:16px; }
     urgentesPrimero(tocan).forEach(function(t){ cajaToca.appendChild(tarjetaToca(t)); });
   }
 
+  // Una decisión urgente va sola en su tarjeta de arriba, con sus baldosas y su «Copiar respuestas».
+  function tarjetaYa(t){
+    var tar = tarjetaDecision(t, "Decisión " + letra(t), function(tar){
+      var fila = el("div", "acciones"), b = botonCopiar(respondida(t)); b.classList.add("avanza"); fila.appendChild(b); tar.appendChild(fila);
+    }, function(){ tar.replaceWith(tarjetaYa(t)); });
+    return tar;
+  }
   if (arribaYa.length) {
     var cajaYa = $("ya"), rejilla = el("div", "ya-tarjetas");
     cajaYa.appendChild(el("h2", "", "Ya, sí o sí"));
-    arribaYa.forEach(function(t){ rejilla.appendChild(t.decision ? tarjetaDecision(t, true) : tarjetaToca(t)); });
+    arribaYa.forEach(function(t){ rejilla.appendChild(t.decision ? tarjetaYa(t) : tarjetaToca(t)); });
     cajaYa.appendChild(rejilla);
     if (sobranYa.length) {
       var abajoDec = sobranYa.filter(function(t){ return t.decision; }).length;
@@ -460,10 +592,18 @@ details.listo .dentro { margin-top:16px; }
     $("hago").appendChild(flujo);
   }
   // Dos columnas solo si las dos tienen algo: nunca media página vacía.
-  $("columnas").classList.toggle("sola", !$("decidir").children.length && !$("toca").children.length || !flujo.children.length);
+  $("columnas").classList.toggle("sola", !$("toca").children.length || !flujo.children.length);
+  // Sin nada suyo en la columna, ni siquiera ocupa su hueco en la rejilla.
+  $("col-tu").hidden = !$("toca").children.length;
+  $("col-yo").hidden = !flujo.children.length;
 
   // Lo siguiente sale solo de las tareas.
-  function irA(id){ var e = $("t-" + id); if (e) e.scrollIntoView({behavior:"smooth", block:"center"}); }
+  function irA(id){
+    // Una decisión de las de abajo puede no estar a la vista: se pone delante antes de ir a ella.
+    var t = todas.filter(function(x){ return x.id === id; })[0];
+    if (t && decidirAbajo.indexOf(t) >= 0 && pasoDec !== id) { pasoDec = id; guardar("paso", id); pintarDecidir(); }
+    var e = $("t-" + id); if (e) e.scrollIntoView({behavior:"smooth", block:t && t.decision ? "start" : "center"});
+  }
   function pintarSiguiente(){
     var caja = $("siguiente");
     caja.textContent = "";
