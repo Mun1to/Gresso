@@ -17,7 +17,8 @@ crear y renovar admiten --marca marca.json: {"nombre":...,"logo":...,"logoOscuro
 página. renovar pasa una página a la plantilla actual sin perder datos y deja copia en .bak.
 
 En crear y anadir, --datos archivo.json sustituye a la entrada estándar. La entrada se lee
-en UTF-8 y, si no lo es, en cp1252, así que los acentos llegan bien desde Git Bash y PowerShell.
+en UTF-8 y, si no lo es, en cp1252, así que los acentos llegan bien desde Git Bash. La tubería de PowerShell 5.1 los
+convierte en ? antes de llegar: allí, --datos.
 
 datos.json  -> {"titulo":..., "subtitulo":..., "parte":..., "fases":[{"nombre":...,
                 "tareas":[{"id":"t1","texto":"...","estado":"pendiente","nota":"...","peso":1}]}]}

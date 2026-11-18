@@ -16,7 +16,7 @@ Inside Claude Code, two lines:
 /plugin install gresso@vibeset
 ```
 
-If the install summary says `Run /reload-plugins to activate`, run it.
+If the install summary says `Run /reload-plugins to apply`, Claude Code reloads by itself. If it warns and leaves the plugin pending, run `/reload-plugins --force`.
 
 <details>
 <summary>Prefer to install it by hand?</summary>
