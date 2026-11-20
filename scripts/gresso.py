@@ -247,8 +247,11 @@ def avisar_secretos(datos):
                              % donde)
 
 
-def incrustar(html, datos):
-    datos["actualizado"] = ahora()
+def incrustar(html, datos, tocar=True):
+    # Cambiar de plantilla (renovar) no es una novedad: la hora sigue siendo la del último cambio de
+    # verdad, o la página diría «hoy» de un encargo parado desde hace días.
+    if tocar or not datos.get("actualizado"):
+        datos["actualizado"] = ahora()
     # El JSON vive dentro de un <script>: un "</" suelto cerraria la etiqueta antes de tiempo.
     crudo = json.dumps(datos, ensure_ascii=False).replace("</", "<\\/")
     if not MARCA.search(html):
@@ -284,10 +287,10 @@ def escribir(ruta, texto):
     os.remove(temporal)
 
 
-def guardar(ruta, html, datos):
+def guardar(ruta, html, datos, tocar=True):
     avisar_secretos(datos)
     avisar_ya(datos)
-    escribir(ruta, incrustar(html, datos))
+    escribir(ruta, incrustar(html, datos, tocar))
     # La página pide este script cada pocos segundos y solo recarga si ha cambiado. Va después
     # del HTML: si fuera antes, la pestaña podría recargar y seguir viendo lo de antes.
     escribir(ruta + ".version.js", 'window.__gressoVersion="%f";\n' % time.time())
@@ -675,7 +678,7 @@ def cmd_renovar(ruta, resto):
         datos["marca"] = leer_marca(marca)
     html = cargar_plantilla(plantilla, datos.get("titulo", "Seguimiento"))
     copia_si_existe(ruta)
-    guardar(ruta, html, datos)
+    guardar(ruta, html, datos, tocar=False)
 
 
 def main():
