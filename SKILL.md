@@ -47,9 +47,8 @@ Cada tarea admite:
 - `id` - se lo pone el script solo (`t1`, `t2`...). Un id **no cambia nunca**, aunque luego se
   añadan tareas en medio, así que se puede recordar para marcarla después.
 
-Lo de la persona va aparte de lo del agente, en dos columnas en pantalla grande y en una en el
-móvil (lo que tiene que decidir, encima y a todo el ancho), y con todo lo que necesita para hacerlo
-sin preguntar:
+Lo de la persona va arriba, en una tarjeta grande que enseña **una sola cosa cada vez** (la primera
+suya sin hacer), con todo lo que necesita para hacerla sin preguntar:
 
 - `porque` - por qué le toca, en una o dos frases.
 - `pasos` - la lista de pasos numerados.
@@ -62,18 +61,19 @@ sin preguntar:
   bloqueado, un plazo, una caducidad). Su `texto` dice qué hace, dónde y qué se para si no lo hace, en
   la misma frase: `"Pagar la factura del servidor antes del día 10: si no, lo apagan"`.
 
-**Lo urgente va arriba del todo y aparte**, en «Ya, sí o sí», por encima de «Lo siguiente», con sus
-pasos y sus botones como cualquier tarea suya. Entonces el resto de lo suyo pasa a llamarse «Cuando
-puedas». **Como mucho tres a la vista**, en el orden de la página: si hay más, una línea dice cuántas
-y las demás bajan, las primeras, a «Cuando puedas» (el script avisa). Si todo es urgente, nada lo es:
-lo que puede esperar no lleva `ya`. Sin ninguna tarea `ya`, el bloque no sale y la página queda como
-siempre. Vale también en una decisión. Para subirla o bajarla después, sin tocar su estado:
-`estado <ruta> t3=ya` o `estado <ruta> t3=noya`. Cuando pasa a `hecho`, sale sola del bloque. En lo
-que hace el agente, `ya` no vale: no es urgente para quien lee si no tiene que hacerlo él.
+**Lo urgente pasa delante**: la tarjeta de arriba enseña primero lo que lleva `ya`, en el orden de
+la página, y la etiqueta dice «No puede esperar». Después, lo demás suyo. Si todo es urgente, nada lo
+es: lo que puede esperar no lleva `ya`, y el script avisa si hay más de tres a la vez. Vale también en
+una decisión. Para subirla o bajarla después, sin tocar su estado: `estado <ruta> t3=ya` o
+`estado <ruta> t3=noya`. Cuando pasa a `hecho`, la tarjeta pasa a la siguiente. En lo que hace el
+agente, `ya` no vale: no es urgente para quien lee si no tiene que hacerlo él.
 
-Cada tarea suya lleva una casilla que guarda en su navegador y cuenta en el porcentaje. **Esa casilla
-no llega a ti**: cuando te lo diga, márcala con `estado`, y entonces cuenta también en `ver`. `porque`,
-`pasos`, `dime` y `nota` admiten `<strong>`, `<em>`, `<code>` y enlaces; cualquier otra etiqueta se ignora.
+Cada tarea suya lleva una casilla que guarda en su navegador y cuenta en el porcentaje: es la que
+marca «Ya lo he hecho» en la tarjeta, y la que hay en «Ver todo lo tuyo» para desmarcarla. **Esa
+casilla no llega a ti**: cuando te lo diga, márcala con `estado`, y entonces cuenta también en `ver`.
+`porque`, `pasos`, `dime` y `nota` admiten `<strong>`, `<em>`, `<code>` y enlaces; cualquier otra
+etiqueta se ignora. Como la tarjeta los enseña en grande, `texto` va en una frase corta y `porque` en
+una o dos.
 
 **Lo que tiene que decidir va en la misma página**, no en otra. Una decisión es una tarea con el
 campo `decision`:
@@ -108,13 +108,13 @@ Así se escribe para que se entienda en frío:
   `gente`, `dinero`, `texto`, `igual`, `estrella`, `lapiz`, `flecha`, `escudo`.
 - Mejor tres decisiones abiertas como mucho: lo que puedes decidir tú, lo decides y lo cuentas.
 
-En la página se ve **una decisión cada vez**, a todo el ancho, encima de las dos columnas: arriba la
-pregunta, las opciones como baldosas de palabra y frase (la recomendada lo dice), y al pulsar una sale
-lo malo, lo bueno y lo que cuesta, y por qué es la recomendada. Solo se marca una, salvo con
-`"varias": true`. Debajo, la caja «Otra cosa, con tus palabras»; «Siguiente» pasa a la otra y al final
-sale lo decidido, cada una con su «Cambiar», con **un solo «Copiar respuestas»**. Todo se guarda en
-su navegador, y la pestaña sigue en la misma decisión cuando se pone al día sola. Una decisión con
-`ya` va arriba, sola en su tarjeta.
+Cuando le toca, la decisión sale **en la tarjeta de arriba**, sola: la pregunta en grande, por qué
+ahora, las opciones como botones grandes de palabra y frase y, debajo, la recomendada dicha con
+palabras y su porqué. Al pulsar una sale lo malo, lo bueno y lo que cuesta. Solo se marca una, salvo
+con `"varias": true`. Debajo, la caja «Otra cosa, con tus palabras», «Copiar respuestas» y
+«Siguiente», que pasa a lo siguiente suyo. Cuando ya solo queda pasarte lo decidido, la tarjeta dice
+«Pásame lo que has decidido», con cada una y su «Cambiar», y **un solo «Copiar respuestas»**. Todo se
+guarda en su navegador, y la pestaña sigue en la misma decisión cuando se pone al día sola.
 
 Cada decisión abierta lleva **una letra** (A, B, C...) y cada opción **un número**, en el orden de la
 página, y así llega el texto copiado: `A. ¿Publico hoy o espero al lunes? → 1 · Hoy`. Si las mismas
@@ -249,22 +249,22 @@ interno, no se sube a un repositorio público.
 
 - **Un solo archivo, cero CDN.** Tiene que verse igual sin internet.
 - **Tema del sistema sin botón**, claro u oscuro por `prefers-color-scheme`, y legible en el móvil.
-- **Arriba del todo, «Ya, sí o sí»**, solo si alguna tarea lleva `ya`: como mucho tres, una al lado
-  de otra en pantalla grande y una debajo de otra en el móvil, y una línea si hay más.
-- **Debajo, «Lo siguiente»**: lo que le toca a quien lee, con un botón que lleva a ese paso, y lo
-  que hace el agente ahora. Sale solo de las tareas, no se escribe aparte: basta con que los estados
-  estén al día. Mientras quede algo en «Ya, sí o sí», la línea de quien lee no sale, porque lo
-  repetiría. El `parte` va debajo de lo del agente.
-- **La cifra grande del porcentaje, una barra de un solo color y una frase**: «31 de 60 tareas
-  hechas. Quedan 29.», que es la pregunta de verdad.
-- **Lo que tiene que decidir, una cada vez y a todo el ancho**, con las opciones como baldosas de
-  palabra y frase, lo malo, lo bueno y lo que cuesta de la elegida, «Siguiente» y un solo «Copiar
-  respuestas» al final.
-- **Lo parado va primero** en lo que hace el agente, con lo que falta para desbloquearlo.
+- **Arriba, «Ahora te toca solo esto»**: una tarjeta grande en el color de la marca con UNA sola
+  cosa suya, la primera sin hacer (primero lo que lleva `ya`). Su frase en grande, su `porque`, sus
+  `pasos` numerados, sus botones y «Ya lo he hecho», que marca su casilla y pasa a la siguiente. Si
+  es una decisión, sus opciones como botones grandes. Nada más en la página pesa lo mismo.
+- **Debajo, «Después»**: las tres o cuatro siguientes suyas, solo el título. Pulsar una la sube a la
+  tarjeta. El resto de lo suyo, con sus casillas, plegado en «Ver todo lo tuyo».
+- **Si no le toca nada, la tarjeta lo dice** («Nada, por ahora») y cuenta qué hace el agente ahora,
+  con el `parte`. Sale solo de las tareas, no se escribe aparte: basta con que los estados estén al día.
+- **La cifra del porcentaje en la cabecera, con «31 de 60 hechas» y una barra de un solo color**
+  debajo, y el porcentaje también en el título de la pestaña.
+- **Lo que hace el agente, debajo y más pequeño**: qué tiene entre manos, el `parte`, lo parado a la
+  vista con lo que falta para desbloquearlo, y el resto por fases, plegado.
 - **El estado es una palabra suelta en negrita** («Ahora», «Parado») y una casilla. Sin fichas, sin
   puntos de color, sin nada que lata y sin mini gráficos: la página no se explica a sí misma.
 - **Lo hecho, plegado y al final**, con su número: la pregunta de quien abre la página es qué falta.
-- **Letra de 17 px para arriba**, que crece en pantallas grandes, y nada por debajo de 16.
+- **Letra de 17 px para arriba**, que crece en pantallas grandes.
 - **La hora de la última novedad en la cabecera**, y el porcentaje también en el título de la
   pestaña. **Si el archivo lleva 90 minutos sin escribirse, lo dice en rojo** («lleva 2 h sin
   moverse») en vez de seguir aparentando estar al día: si paras con tareas abiertas, se verá.

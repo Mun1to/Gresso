@@ -27,11 +27,11 @@ tareas.json -> la lista de tareas sola, con la misma forma.
 Una tarea de quien lee lleva además "quien":"tu", y puede traer "porque", "pasos":[...],
 "acciones":[{"texto":...,"url":...} o {"texto":...,"copiar":...}] y "dime".
 Con "ya":true es de las que tiene que hacer ya, sí o sí: solo puede hacerla quien lee y algo se
-para si no la hace. Sale arriba del todo, aparte, y como mucho tres. estado tN=ya la sube y
-tN=noya la baja; al pasar a hecho sale sola de ese bloque.
+para si no la hace. Pasa delante de todo lo suyo en la tarjeta de arriba. estado tN=ya la sube
+y tN=noya la baja; al pasar a hecho deja la tarjeta a la siguiente.
 Una decisión lleva "decision":{"opciones":[{"texto":...,"detalle":...,"recomendada":true,
 "porque":...,"malo":...,"bueno":...,"cuesta":...,"noHace":...,"icono":...}],"siNoDices":...,
-"varias":false}. La página enseña una abierta cada vez, con las opciones como baldosas, y
+"varias":false}. La página la enseña en la tarjeta de arriba, con las opciones como botones, y
 decisiones imprime las abiertas, con su letra y en el orden de la página, para preguntarlas
 también por otro sitio (el móvil) con los mismos números.
 
@@ -50,7 +50,7 @@ import time
 from datetime import datetime
 
 ESTADOS = ("pendiente", "haciendo", "hecho", "bloqueado", "descartado")
-# Lo que le toca a quien lee y no puede esperar sale arriba, aparte. Más de tres ya no es urgente.
+# Lo que le toca a quien lee y no puede esperar pasa delante. Más de tres a la vez ya no es urgente.
 MAX_YA = 3
 MARCA = re.compile(
     r'(<script id="gresso-datos" type="application/json">)(.*?)(</script>)',
@@ -188,8 +188,8 @@ def avisar_ya(datos):
     urgentes = [t for f in datos.get("fases", []) for t in f.get("tareas", [])
                 if t.get("ya") is True and t.get("estado") not in ("hecho", "descartado")]
     if len(urgentes) > MAX_YA:
-        sys.stderr.write("gresso: aviso: hay %d tareas «ya» sin hacer y arriba solo caben %d (%s); las demás "
-                         "bajan con el resto de lo suyo. Si alguna puede esperar, bájala con estado <ruta> tN=noya\n"
+        sys.stderr.write("gresso: aviso: hay %d tareas «ya» sin hacer, y con más de %d a la vez ninguna parece "
+                         "urgente (las primeras: %s). Si alguna puede esperar, bájala con estado <ruta> tN=noya\n"
                          % (len(urgentes), MAX_YA, ", ".join(t.get("id", "?") for t in urgentes[:MAX_YA])))
 
 

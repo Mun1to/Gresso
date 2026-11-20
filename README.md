@@ -5,7 +5,7 @@ every step in the terminal, or making you interrupt it to ask how far along it i
 keeps rewriting one HTML file as it works: a progress bar, a percentage, what is done, what is
 left and what is blocked. You leave the tab open and it keeps itself up to date.
 
-![A Gresso page: the next step on top, the percentage beside it, what you have to decide and what the agent is doing](assets/preview.png)
+![A Gresso page: one big card with the only thing you have to do now, the next ones as titles below it, and what the agent is doing underneath](assets/preview.png)
 
 ## Install
 
@@ -56,30 +56,31 @@ steps is ceremony.
 
 One HTML file, opened straight in your own browser, never a hosted page:
 
-- Above everything, apart, what only you can do and cannot wait ("Ya, sí o sí", now, no matter
-  what): at most three, with their steps and buttons, and a line saying how many more there are.
-  The rest of what is yours goes under "Cuando puedas" (whenever you can). A task gets there with
-  `"ya": true`, or later with `estado <page> t3=ya` (`t3=noya` takes it back down), and leaves the
-  block once it is done. With no such task the block does not show.
-- On top, the next step: what you have to do, with a button that takes you there, and what the
-  agent is doing now. It is worked out from the tasks.
-- A big percentage, one single-colour bar and the number of tasks left, which is the question
-  you actually have.
+- On top, one big card in your project's colour with the ONE thing you have to do now ("Ahora te
+  toca solo esto"): the first of yours not done yet, in large type, with why in a sentence, its
+  numbered steps, buttons to open a link or copy a value, what to say when you finish, and "Ya lo
+  he hecho" (done), which ticks its checkbox and moves on to the next. Nothing else on the page
+  weighs as much. It is worked out from the tasks.
+- What cannot wait goes first: a task of yours with `"ya": true` (or later `estado <page> t3=ya`,
+  and `t3=noya` to take it back) jumps to the front of the card, and the card says so.
+- Under the card, "Después" (next): the following three or four of yours, titles only. Click one
+  and it moves up into the card. The rest of yours, with their checkboxes, folded in "Ver todo lo
+  tuyo" (everything of yours).
+- If there is nothing for you, the card says so and tells you what the agent is doing now.
+- Decisions go in the same card when it is their turn: the whole question in large type with why
+  now and what happens if you do not answer; the options as big buttons with a word and a sentence,
+  the recommended one said in words and never preselected; once you pick one, its downside, upside
+  and cost, one line each. A box takes your own answer, and "copy answers" gives you
+  `A. question → 1 · option` lines to paste in the chat. Each open decision has a letter and each
+  option a number, and `decisiones` prints them in the same order, so the same questions can be
+  asked somewhere else (on your phone) and "A one" means the same.
+- The percentage in the header with one single-colour bar and how many are done, which is the
+  question you actually have.
+- What the agent does, below and smaller: what it has in hand, a short "where I am" note in two or
+  three lines, blocked tasks in sight with what is missing to unblock them, and the rest by phase,
+  folded.
 - The state of a task is a plain bold word and a checkbox: no pills, no coloured dots, nothing
   that pulses.
-- Blocked tasks come first in the agent's list, each with what is missing to unblock it.
-- What you have to do goes apart from what the agent does, in two columns on a big screen and one
-  on a phone: why, numbered steps, buttons to open a link or copy a value, what to say when you
-  finish, and a checkbox saved in your browser that counts towards the percentage.
-- Decisions live on the same page, one at a time and full width: the whole question on top with
-  why now and what happens if you do not answer; the options as tiles with a word and a sentence,
-  the recommended one said in words and never preselected; once you pick one, its downside, upside
-  and cost, one line each. Next moves on, a box takes your own answer, and at the end a single
-  "copy answers" button gives you `A. question → 1 · option` lines to paste in the chat. Each open
-  decision has a letter and each option a number, and `decisiones` prints them in the same order,
-  so the same questions can be asked somewhere else (on your phone) and "A one" means the same.
-- A short "where I am" note the agent keeps up to date, in two or three lines.
-- Tasks grouped in phases, each with its count.
 - What is done is folded at the end, with its count: the question when you open the page is what
   is left. Dropped tasks stay there crossed out, and do not count towards the total.
 - The time of the last update in the header, and the percentage in the tab title. If the file has

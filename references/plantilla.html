@@ -5,188 +5,189 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>__TITULO__</title>
 <style>
-:root { color-scheme:light dark; --bg:#F7F7F5; --card:#FFFFFF; --tinta:#15181E; --texto:#333843; --suave:#565B66; --acento:#2F5FB8; --acento-texto:#2F5FB8; --sobre-acento:#FFFFFF; --boton-suave:#E6E9F0; --boton-suave-texto:#15181E; --linea:#DEDDD8; --caja:#A3A39D; --verde:#2B8A57; --rojo:#C8372D; --fondo-barra:#E6E5E0; --letra:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; --letra-titulos:var(--letra); }
+:root { color-scheme:light dark; --bg:#F7F7F5; --card:#FFFFFF; --tinta:#15181E; --texto:#333843; --suave:#565B66; --acento:#2F5FB8; --acento-texto:#2F5FB8; --sobre-acento:#FFFFFF; --boton-suave:#E6E9F0; --boton-suave-texto:#15181E; --linea:#DEDDD8; --caja:#A3A39D; --verde:#2B8A57; --rojo:#C8372D; --fondo-barra:#E6E5E0; --letra:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; --letra-titulos:var(--letra); --mueve:1; }
 @media (prefers-color-scheme: dark) { :root { --bg:#111318; --card:#181B22; --tinta:#F2F3F5; --texto:#D2D5DB; --suave:#A9AEB8; --acento-texto:#9DB8F0; --boton-suave:#252A35; --boton-suave-texto:#F2F3F5; --linea:#2C313C; --caja:#666C79; --verde:#4FB37C; --rojo:#F0837A; --fondo-barra:#252A35; } }
+/* Con «reducir movimiento» se mueve menos, pero se mueve. */
+@media (prefers-reduced-motion: reduce) { :root { --mueve:.35; } }
 * { box-sizing:border-box; }
 [hidden] { display:none !important; }
-html { -webkit-text-size-adjust:100%; font-size:clamp(16px, calc(8px + .55vw), 20px); }
+/* Nada por debajo de 17 px: la base no baja de ahí y crece en pantalla grande. */
+html { -webkit-text-size-adjust:100%; font-size:clamp(17px, calc(9px + .55vw), 20px); }
 body { margin:0; background:var(--bg); color:var(--texto); font:400 1.0625rem/1.55 var(--letra); }
 .hoja { width:min(1760px,100%); margin:0 auto; padding:28px clamp(16px,4vw,64px) 72px; }
 h1,h2,h3 { font-family:var(--letra-titulos); color:var(--tinta); line-height:1.2; margin:0; }
-h1 { font-size:clamp(2rem,3.4vw,3rem); font-weight:800; }
-h2 { font-size:1.625rem; font-weight:800; margin:0 0 16px; }
-h3 { font-size:1.1875rem; font-weight:700; }
+h1 { font-size:clamp(2rem,3.2vw,3rem); font-weight:800; }
+h2 { font-size:1.375rem; font-weight:800; margin:0 0 14px; }
+h3 { font-size:1.125rem; font-weight:700; }
 strong { color:var(--tinta); font-weight:700; }
-code { font-size:.94em; }
+code { font-size:.96em; }
 a { color:var(--acento-texto); }
-.cab { display:flex; align-items:center; justify-content:space-between; gap:24px; }
-.logo { display:block; height:52px; width:auto; max-width:100%; margin-bottom:14px; }
-.mascota { display:block; width:92px; height:92px; object-fit:contain; flex:none; }
-.mascota.pixelada { image-rendering:pixelated; }
-.sub { margin:8px 0 0; }
-.sello { color:var(--suave); margin:8px 0 0; }
+
+/* Cabecera: el nombre a la izquierda y, a la derecha, cuánto va hecho. Debajo, la barra de un solo color. */
+.cab { display:flex; align-items:flex-end; justify-content:space-between; gap:16px 32px; flex-wrap:wrap; }
+.cab-texto { min-width:0; flex:1 1 420px; }
+.logo { display:block; height:48px; width:auto; max-width:100%; margin-bottom:12px; }
+.sub { margin:8px 0 0; max-width:70ch; }
+.sello { color:var(--suave); margin:6px 0 0; }
 .sello.parada { color:var(--rojo); font-weight:600; }
-.ya { margin-top:28px; }
-.ya:not([hidden]) + .arriba { margin-top:44px; }
-.ya-tarjetas { display:grid; grid-template-columns:minmax(0,1fr); gap:16px; align-items:start; }
-.ya-tarjetas .tarjeta { margin:0; }
-.ya-mas { color:var(--tinta); font-weight:600; margin:14px 0 0; }
-.lado:empty { display:none; }
-.arriba { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:clamp(24px,4vw,72px); margin-top:28px; align-items:start; }
-.fila-sig { display:grid; grid-template-columns:3.2rem minmax(0,1fr); gap:4px 12px; margin:0 0 16px; }
-.fila-sig b { font-family:var(--letra-titulos); font-weight:800; color:var(--tinta); font-size:1.1875rem; line-height:1.4; }
-.fila-sig .que { color:var(--tinta); font-size:1.1875rem; line-height:1.4; font-weight:600; }
-.fila-sig .como { grid-column:2; }
-.fila-sig .boton { grid-column:2; justify-self:start; margin-top:6px; }
-.cifra { font-family:var(--letra-titulos); font-weight:800; font-size:clamp(3.25rem,5vw,4.5rem); line-height:1; color:var(--tinta); }
-.cifra-texto { color:var(--tinta); font-weight:600; margin:6px 0 12px; }
-.barra { height:12px; border-radius:6px; background:var(--fondo-barra); overflow:hidden; }
+.cab-lado { display:flex; align-items:flex-end; gap:20px; }
+.cifra { font-family:var(--letra-titulos); font-weight:800; font-size:clamp(2.25rem,3vw,2.75rem); line-height:1; color:var(--tinta); text-align:right; }
+.cifra-texto { color:var(--tinta); font-weight:600; margin:6px 0 0; text-align:right; white-space:nowrap; }
+.mascota { display:block; width:88px; height:88px; object-fit:contain; flex:none; }
+.mascota.pixelada { image-rendering:pixelated; }
+.barra { height:10px; border-radius:5px; background:var(--fondo-barra); overflow:hidden; margin-top:20px; }
 .barra i { display:block; height:100%; background:var(--acento-texto); transition:width .4s ease; }
-.columnas { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); gap:clamp(32px,4vw,72px); margin-top:44px; align-items:start; }
-.columnas.sola { grid-template-columns:minmax(0,1fr); }
-.columnas > div:empty { display:none; }
-.seccion:empty { display:none; }
-.seccion:not(:empty) + .seccion:not(:empty) { margin-top:44px; }
+
+/* La tarjeta de arriba: UNA cosa, grande y en el color de la marca. Nada más pesa lo mismo. */
+.toca { margin-top:clamp(24px,3vw,40px); padding:clamp(24px,3.2vw,52px); border-radius:16px; color:var(--sobre-acento);
+        background:var(--acento) linear-gradient(135deg, transparent 35%, color-mix(in srgb, var(--sobre-acento) 12%, transparent)); }
+.toca h2, .toca strong, .toca h3 { color:inherit; }
+.toca a:not(.boton) { color:inherit; text-decoration-thickness:2px; text-underline-offset:3px; }
+.toca .eti { margin:0 0 12px; font-weight:700; font-size:1.125rem; }
+.toca .eti .urge { font-weight:800; }
+.toca .que { font-size:clamp(1.75rem,2.7vw,3.25rem); line-height:1.08; font-weight:800; letter-spacing:-.01em; margin:0; max-width:28ch; text-wrap:balance; }
+.toca .porque { font-size:clamp(1.125rem,1.3vw,1.375rem); line-height:1.45; margin:16px 0 0; max-width:62ch; }
+.toca .nota { margin:12px 0 0; max-width:62ch; }
+.toca-cuerpo { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); gap:24px clamp(32px,4vw,80px); align-items:start; }
+.toca-cuerpo.solo { grid-template-columns:minmax(0,1fr); }
+.toca-cuerpo.solo .toca-como { margin-top:6px; }
+.pasos { list-style:none; margin:0; padding:0; counter-reset:paso; display:grid; gap:14px; max-width:68ch; }
+.pasos li { display:grid; grid-template-columns:2.1rem minmax(0,1fr); gap:10px; font-size:1.125rem; line-height:1.45; counter-increment:paso; }
+.pasos li::before { content:counter(paso); font-family:var(--letra-titulos); font-weight:800; font-size:1.375rem; line-height:1.2; }
+.toca .acciones { margin-top:24px; }
+.pasos:empty + .acciones, .toca-como > .acciones:first-child { margin-top:0; }
+.dime { margin:18px 0 0; max-width:62ch; }
+.dime b { font-weight:800; }
+.puntos { display:flex; gap:7px; margin-top:28px; max-width:640px; }
+.puntos i { flex:0 1 34px; min-width:5px; height:8px; border-radius:4px; background:color-mix(in srgb, var(--sobre-acento) 30%, transparent); }
+.puntos i.si { background:var(--sobre-acento); }
+.entra { animation:entra .42s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes entra { from { opacity:0; transform:translateY(calc(14px * var(--mueve))); } }
+
+/* Botones. Dentro de la tarjeta, el principal en el color de la letra y el resto en un fondo suave. */
+.acciones { display:flex; flex-wrap:wrap; gap:12px; margin:14px 0 0; }
+.boton { display:inline-flex; align-items:center; justify-content:center; min-height:48px; padding:8px 18px; border-radius:8px; border:0; font:700 1rem/1.2 var(--letra-titulos); cursor:pointer; white-space:nowrap; text-decoration:none; background:var(--boton-suave); color:var(--boton-suave-texto); transition:filter .18s ease, transform .18s ease; }
+.boton.fuerte { background:var(--acento); color:var(--sobre-acento); }
+.boton:hover { filter:brightness(1.1); }
+.toca .boton { min-height:56px; padding:12px 26px; border-radius:10px; font-size:1.125rem; background:color-mix(in srgb, var(--sobre-acento) 17%, transparent); color:var(--sobre-acento); }
+.toca .boton.fuerte { background:var(--sobre-acento); color:var(--acento); }
+.toca .boton:hover { filter:none; transform:translateY(calc(-1px * var(--mueve))); }
+.boton:focus-visible, .opcion:focus-visible, .luego:focus-visible, .ir-a:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible { outline:3px solid var(--acento-texto); outline-offset:2px; }
+.toca .boton:focus-visible, .toca .opcion:focus-visible, .toca textarea:focus-visible { outline-color:var(--sobre-acento); }
+
+/* Una decisión dentro de la tarjeta: las opciones como botones grandes, la recomendada dicha con palabras. */
+.opciones { display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap:12px; margin:24px 0 0; }
+.opcion { position:relative; display:flex; flex-direction:column; align-items:flex-start; gap:4px; width:100%; min-height:64px; text-align:left; font:inherit; color:inherit; cursor:pointer;
+          background:color-mix(in srgb, var(--sobre-acento) 12%, transparent); border:2px solid color-mix(in srgb, var(--sobre-acento) 38%, transparent); border-radius:10px; padding:16px 52px 16px 18px; transition:background .18s ease, border-color .18s ease; }
+@media (hover:hover) { .opcion:hover { border-color:var(--sobre-acento); } }
+.opcion svg { width:24px; height:24px; display:block; margin-bottom:4px; }
+.opcion .palabra { font-family:var(--letra-titulos); font-weight:800; font-size:1.25rem; line-height:1.25; }
+.opcion .frase { font-size:1rem; line-height:1.45; }
+.opcion .rec { font-weight:800; font-size:1rem; margin-top:6px; }
+.opcion::after { content:""; position:absolute; right:16px; top:18px; width:22px; height:22px; border-radius:50%; border:2px solid currentColor; opacity:.8; }
+.opciones.varias .opcion::after { border-radius:5px; }
+.opcion[aria-pressed="true"] { background:var(--sobre-acento); border-color:var(--sobre-acento); color:var(--acento); }
+.opcion[aria-pressed="true"]::after { opacity:1; background:radial-gradient(circle, currentColor 0 5px, transparent 6px); }
+.opciones.varias .opcion[aria-pressed="true"]::after { background:linear-gradient(currentColor, currentColor) center / 10px 10px no-repeat; }
+.recomiendo { margin:16px 0 0; max-width:70ch; }
+.ficha { display:grid; gap:6px; margin:16px 0 0; max-width:80ch; }
+.ficha div { display:grid; grid-template-columns:7rem minmax(0,1fr); gap:10px; }
+.ficha dt { font-weight:800; }
+.ficha dd { margin:0; }
+.elegida-nombre { font-weight:800; margin:18px 0 0; }
+textarea { display:block; width:100%; min-height:52px; margin-top:18px; padding:12px 14px; border:2px solid var(--linea); border-radius:8px; background:transparent; color:var(--tinta); font:inherit; resize:none; overflow:hidden; }
+.toca textarea { color:inherit; border-color:color-mix(in srgb, var(--sobre-acento) 45%, transparent); background:color-mix(in srgb, var(--sobre-acento) 7%, transparent); }
+textarea::placeholder { color:var(--suave); opacity:1; }
+.toca textarea::placeholder { color:color-mix(in srgb, var(--sobre-acento) 82%, transparent); }
+.defecto { margin:10px 0 0; }
+.resumen { list-style:none; margin:20px 0 0; padding:0; display:grid; gap:14px; max-width:90ch; }
+.resumen li { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:14px; align-items:center; }
+.resumen b { display:block; }
+
+/* Después: lo que viene, solo en títulos. Pulsar uno lo sube a la tarjeta. */
+.despues { margin-top:28px; }
+.despues h2 { font-size:1.25rem; margin-bottom:12px; }
+.fichas-luego { display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap:14px; }
+.luego { display:block; width:100%; min-height:64px; text-align:left; cursor:pointer; background:var(--card); color:var(--tinta); border:2px solid var(--linea); border-radius:10px; padding:16px 20px;
+         font:700 1.125rem/1.3 var(--letra-titulos); transition:border-color .18s ease, transform .18s ease; }
+@media (hover:hover) { .luego:hover { border-color:var(--acento-texto); transform:translateY(calc(-2px * var(--mueve))); } }
+
+/* Lo de debajo, más pequeño y plegado: no es lo que hay que mirar. */
+details.plegable { margin-top:22px; }
+details.plegable summary { cursor:pointer; font-family:var(--letra-titulos); font-weight:800; font-size:1.25rem; color:var(--tinta); list-style:none; display:flex; align-items:center; gap:12px; min-height:44px; }
+details.plegable summary::-webkit-details-marker { display:none; }
+details.plegable summary::before { content:""; width:10px; height:10px; border:solid var(--tinta); border-width:0 3px 3px 0; transform:rotate(-45deg); transition:transform .18s ease; flex:none; }
+details.plegable[open] summary::before { transform:translateY(-3px) rotate(45deg); }
+details.plegable .dentro { margin-top:14px; }
+.hago { margin-top:52px; }
+.ahora-yo { color:var(--tinta); margin:0; max-width:90ch; }
+.ahora-yo b { font-weight:800; }
+.parte { margin:8px 0 0; max-width:90ch; }
 .flujo { column-gap:clamp(32px,4vw,72px); }
 .flujo > * { break-inside:avoid; }
-.sola .flujo, .flujo.siempre { columns:2 420px; }
-.sola .flujo.una { columns:auto; }
-.sola .flujo.una .tareas { columns:2 420px; column-gap:clamp(32px,4vw,72px); }
-.sola .flujo.una .tarea { break-inside:avoid; }
-.fase { margin:0 0 26px; }
-.fase-cab { display:flex; justify-content:space-between; align-items:baseline; gap:16px; margin:0 0 8px; }
+.flujo.dos { columns:2 420px; }
+.fase { margin:18px 0 0; }
+.flujo > .fase:first-child { margin-top:0; }
+.fase-cab { display:flex; justify-content:space-between; align-items:baseline; gap:16px; margin:0 0 6px; }
 .fase-cab span { color:var(--suave); white-space:nowrap; }
 .parado-cab { color:var(--rojo); }
 .tareas { list-style:none; margin:0; padding:0; }
-.tarea { display:grid; grid-template-columns:26px minmax(0,1fr); gap:0 12px; padding:9px 0; }
-.casilla { width:26px; height:26px; border:2px solid var(--caja); border-radius:5px; display:grid; place-items:center; }
+.tarea { display:grid; grid-template-columns:24px minmax(0,1fr); gap:0 12px; padding:7px 0; }
+.casilla { width:24px; height:24px; margin-top:2px; border:2px solid var(--caja); border-radius:5px; display:grid; place-items:center; }
 .tarea.hecho .casilla { background:var(--verde); border-color:var(--verde); }
-.tarea.hecho .casilla::after { content:""; width:7px; height:13px; border:solid #fff; border-width:0 3px 3px 0; transform:translateY(-2px) rotate(45deg); }
+.tarea.hecho .casilla::after { content:""; width:6px; height:12px; border:solid #fff; border-width:0 3px 3px 0; transform:translateY(-2px) rotate(45deg); }
 .tarea.haciendo .casilla { border-color:var(--acento-texto); }
 .tarea.bloqueado .casilla { border-color:var(--rojo); }
 .tarea .texto { color:var(--tinta); }
 .tarea.descartado .texto { text-decoration:line-through; color:var(--suave); }
-.nota { display:block; font-size:1rem; color:var(--suave); }
+.nota-fila { display:block; color:var(--suave); }
 .estado-palabra { font-weight:700; color:var(--acento-texto); }
 .estado-palabra.parado { color:var(--rojo); }
-.tarjeta { background:var(--card); border:2px solid var(--linea); border-radius:8px; padding:20px; margin-bottom:16px; }
-.tarjeta h3 { margin-bottom:8px; }
-.tarjeta p { margin:0 0 10px; }
-.tarjeta .quien { display:grid; grid-template-columns:32px minmax(0,1fr); gap:0 14px; }
-.tarjeta ol { margin:0 0 12px; padding-left:1.4rem; }
-.tarjeta li { margin:0 0 6px; }
-.dime { color:var(--tinta); font-weight:600; margin:10px 0 0 !important; }
-.acciones { display:flex; flex-wrap:wrap; gap:10px; margin:12px 0 0; }
-.boton { display:inline-flex; align-items:center; justify-content:center; min-height:48px; padding:8px 18px; border-radius:8px; border:0; font:700 1rem/1.2 var(--letra-titulos); cursor:pointer; white-space:nowrap; text-decoration:none; background:var(--boton-suave); color:var(--boton-suave-texto); transition:filter .18s ease; }
-.boton.fuerte { background:var(--acento); color:var(--sobre-acento); }
-.boton:hover { filter:brightness(1.12); }
-.boton:focus-visible, .baldosa:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible { outline:3px solid var(--acento-texto); outline-offset:2px; }
-input[type=checkbox] { appearance:none; -webkit-appearance:none; width:26px; height:26px; margin:0; border:2px solid var(--caja); border-radius:5px; background:transparent; cursor:pointer; flex:none; display:grid; place-items:center; }
+input[type=checkbox] { appearance:none; -webkit-appearance:none; width:24px; height:24px; margin:2px 0 0; border:2px solid var(--caja); border-radius:5px; background:transparent; cursor:pointer; flex:none; display:grid; place-items:center; }
 input[type=checkbox]:checked { background:var(--verde); border-color:var(--verde); }
-input[type=checkbox]:checked::after { content:""; width:7px; height:13px; border:solid #fff; border-width:0 3px 3px 0; transform:translateY(-2px) rotate(45deg); }
-.recogida h3 { text-decoration:line-through; color:var(--suave); }
-.recogida .cuerpo-tarjeta { display:none; }
-/* Lo que hay que decidir: una abierta cada vez. Arriba la pregunta, por qué ahora y qué pasa si no contesta;
-   las opciones como baldosas de palabra y frase; al pulsar una, lo malo, lo bueno y lo que cuesta, una línea cada uno. */
-/* Va a todo el ancho, encima de las dos columnas: en una columna estrecha, las baldosas apiladas dejaban un hueco al lado. */
-#decidir:not(:empty) { margin-top:44px; }
-#decidir .tarjeta { margin-bottom:0; }
-.tarjeta.decide { container-type:inline-size; }
-.tarjeta.decide h3 { font-size:clamp(1.25rem, 1.6vw, 1.5rem); font-weight:800; line-height:1.3; margin:0 0 6px; }
-#decidido h3 { font-size:1.375rem; font-weight:800; }
-.tarjeta .cuenta { color:var(--suave); font-weight:600; margin:0 0 4px; }
-.tarjeta .porque { margin:0 0 4px; }
-.tarjeta .pista { color:var(--suave); margin:8px 0 0; }
-.baldosas { display:grid; grid-template-columns:minmax(0,1fr); gap:12px; margin:16px 0 4px; }
-@container (min-width:760px) {
-  .baldosas { grid-template-columns:repeat(3, minmax(0,1fr)); }
-  .baldosas.n2, .baldosas.n4 { grid-template-columns:repeat(2, minmax(0,1fr)); }
-}
-.baldosa { position:relative; display:flex; flex-direction:column; align-items:flex-start; width:100%; text-align:left; font:inherit; color:var(--tinta); cursor:pointer; background:var(--card); border:2px solid var(--linea); border-radius:8px; padding:14px 48px 14px 16px; transition:background .15s ease, border-color .15s ease; }
-@media (hover:hover) { .baldosa:hover { border-color:var(--acento-texto); } }
-.baldosa svg { width:24px; height:24px; color:var(--acento-texto); display:block; margin-bottom:8px; }
-.baldosa .palabra { display:block; font-family:var(--letra-titulos); font-size:1.1875rem; font-weight:800; line-height:1.25; }
-.baldosa .frase { display:block; color:var(--suave); font-size:1rem; line-height:1.45; margin-top:4px; }
-.baldosa .rec { display:block; color:var(--acento-texto); font-weight:700; font-size:1rem; margin-top:8px; }
-.baldosa::after { content:""; position:absolute; right:14px; top:14px; width:22px; height:22px; border-radius:50%; border:2px solid var(--caja); }
-.baldosas.varias .baldosa::after { border-radius:5px; }
-.baldosa[aria-pressed="true"] { background:var(--acento); border-color:var(--acento); color:var(--sobre-acento); }
-.baldosa[aria-pressed="true"] svg, .baldosa[aria-pressed="true"] .frase, .baldosa[aria-pressed="true"] .rec { color:var(--sobre-acento); }
-.baldosa[aria-pressed="true"]::after { border-color:var(--sobre-acento); background:radial-gradient(circle, var(--sobre-acento) 0 5px, transparent 6px); }
-.baldosas.varias .baldosa[aria-pressed="true"]::after { background:linear-gradient(var(--sobre-acento), var(--sobre-acento)) center / 10px 10px no-repeat; }
-.elegida-nombre { color:var(--tinta); font-weight:800; margin:14px 0 4px !important; }
-.porque-rec { margin:12px 0 8px !important; }
-.porque-rec b { color:var(--acento-texto); }
-.ficha { display:grid; gap:6px; margin:8px 0 12px; }
-.ficha div { display:grid; grid-template-columns:7rem minmax(0,1fr); gap:10px; }
-.ficha dt { color:var(--tinta); font-weight:700; }
-.ficha dd { margin:0; }
-.ficha .m dt { color:var(--rojo); }
-.ficha .b dt { color:var(--verde); }
-@container (max-width:520px) { .ficha div { grid-template-columns:5.75rem minmax(0,1fr); } }
-.resumen { list-style:none; margin:8px 0 0; padding:0; display:grid; gap:16px; }
-.resumen li { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:14px; align-items:center; margin:0; }
-.resumen b { display:block; }
-.resumen .vacia { color:var(--suave); }
-textarea { display:block; width:100%; min-height:48px; margin-top:8px; padding:10px 12px; border:2px solid var(--linea); border-radius:8px; background:transparent; color:var(--tinta); font:inherit; resize:none; overflow:hidden; }
-textarea::placeholder { color:var(--suave); opacity:1; }
-.defecto { font-size:1rem; margin:8px 0 0 !important; }
-details.listo { margin-top:6px; }
-details.listo summary { cursor:pointer; font-family:var(--letra-titulos); font-weight:800; font-size:1.625rem; color:var(--tinta); list-style:none; display:flex; align-items:center; gap:12px; }
-details.listo summary::-webkit-details-marker { display:none; }
-details.listo summary::before { content:""; width:11px; height:11px; border:solid var(--tinta); border-width:0 3px 3px 0; transform:rotate(-45deg); transition:transform .18s ease; flex:none; }
-details.listo[open] summary::before { transform:translateY(-3px) rotate(45deg); }
-details.listo .dentro { margin-top:16px; }
-#listo { margin-top:32px; }
-/* Lo urgente, una al lado de otra: con dos o tres, a partes iguales; con tres en una pantalla mediana, la
-   tercera a todo el ancho para que no quede una fila coja; con una sola, sus textos a un lado y lo que hay
-   que hacer al otro, para que la tarjeta no se quede media vacía. */
-@media (min-width:1001px) {
-  .ya[data-n="2"] .ya-tarjetas, .ya[data-n="3"] .ya-tarjetas { grid-template-columns:repeat(2, minmax(0,1fr)); }
-  .ya[data-n="3"] .tarjeta:nth-child(3) { grid-column:1 / -1; }
-  .ya[data-n="1"] .tarjeta:not(.recogida) .cuerpo-tarjeta { display:flex; gap:clamp(32px,4vw,72px); }
-  .ya[data-n="1"] .cuerpo-tarjeta > .lado { flex:1 1 0; min-width:0; }
-}
-@media (min-width:1280px) {
-  .ya[data-n="3"] .ya-tarjetas { grid-template-columns:repeat(3, minmax(0,1fr)); }
-  .ya[data-n="3"] .tarjeta:nth-child(3) { grid-column:auto; }
-}
+input[type=checkbox]:checked::after { content:""; width:6px; height:12px; border:solid #fff; border-width:0 3px 3px 0; transform:translateY(-2px) rotate(45deg); }
+.ir-a { font:inherit; color:var(--tinta); background:none; border:0; padding:0; text-align:left; cursor:pointer; }
+@media (hover:hover) { .ir-a:hover { color:var(--acento-texto); } }
+.tarea.marcada .ir-a { text-decoration:line-through; color:var(--suave); cursor:default; }
+
 @media (max-width:1000px) {
-  .arriba, .columnas { grid-template-columns:minmax(0,1fr); }
-  .mascota { width:72px; height:72px; }
-  .logo { height:44px; }
+  .toca-cuerpo { grid-template-columns:minmax(0,1fr); }
+  .mascota { width:68px; height:68px; }
+  .logo { height:40px; }
+}
+@media (max-width:640px) {
+  .cab-lado { width:100%; justify-content:space-between; align-items:center; }
+  .cifra, .cifra-texto { text-align:left; }
+  .toca { border-radius:12px; }
+  .toca .acciones { flex-direction:column; }
+  .toca .boton { width:100%; white-space:normal; text-align:center; }
+  .resumen li { grid-template-columns:minmax(0,1fr); }
 }
 </style>
 </head>
 <body>
 <div class="hoja">
   <header class="cab">
-    <div>
+    <div class="cab-texto">
       <img class="logo" id="logo" alt="" hidden>
       <h1 id="titulo"></h1>
       <p class="sub" id="subtitulo" hidden></p>
       <p class="sello" id="sello"></p>
     </div>
-    <img class="mascota" id="mascota" alt="" hidden>
+    <div class="cab-lado">
+      <div>
+        <div class="cifra" id="cifra"></div>
+        <p class="cifra-texto" id="cifra-texto"></p>
+      </div>
+      <img class="mascota" id="mascota" alt="" hidden>
+    </div>
   </header>
+  <div class="barra" role="progressbar" aria-label="Progreso" aria-valuemin="0" aria-valuemax="100" id="barra"><i id="barra-i"></i></div>
 
-  <section class="ya" id="ya" hidden></section>
-
-  <div class="arriba">
-    <section id="siguiente"></section>
-    <section aria-label="Progreso">
-      <div class="cifra" id="cifra"></div>
-      <p class="cifra-texto" id="cifra-texto"></p>
-      <div class="barra" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="barra"><i id="barra-i"></i></div>
-    </section>
-  </div>
-
-  <section class="seccion" id="decidir"></section>
-
-  <div class="columnas sola" id="columnas">
-    <div id="col-tu"><section class="seccion" id="toca"></section></div>
-    <div id="col-yo"><section class="seccion" id="hago"></section></div>
-  </div>
+  <section class="toca" id="ahora" aria-live="polite"></section>
+  <section class="despues" id="despues" hidden></section>
+  <section id="tuyo"></section>
+  <section class="hago" id="hago" hidden></section>
   <section id="listo"></section>
 </div>
 
@@ -207,7 +208,10 @@ details.listo .dentro { margin-top:16px; }
     } catch(_){ return def; }
   }
   function guardar(k, v){ try { localStorage.setItem(CLAVE + ":" + k, JSON.stringify(v)); } catch(_){} }
-  var marcas = leer("marcas", {}), respuestas = leer("respuestas", {});
+  // Lo que se mira ahora y lo plegado duran lo que la pestaña: sobreviven a que se ponga al día sola.
+  function leerSesion(k, def){ try { var v = sessionStorage.getItem(CLAVE + ":" + k); return v === null ? def : JSON.parse(v); } catch(_){ return def; } }
+  function guardarSesion(k, v){ try { sessionStorage.setItem(CLAVE + ":" + k, JSON.stringify(v)); } catch(_){} }
+  var marcas = leer("marcas", {}), respuestas = leer("respuestas", {}), fijada = leerSesion("ahora", null);
   function el(tag, clase, txt){ var e = document.createElement(tag); if (clase) e.className = clase; if (txt !== undefined) e.textContent = txt; return e; }
   function $(id){ return document.getElementById(id); }
 
@@ -230,7 +234,7 @@ details.listo .dentro { margin-top:16px; }
   var NOMBRES = {fondo:"--bg", tarjeta:"--card", tinta:"--tinta", texto:"--texto", suave:"--suave", acento:"--acento", acentoTexto:"--acento-texto", sobreAcento:"--sobre-acento", botonSuave:"--boton-suave", botonSuaveTexto:"--boton-suave-texto", linea:"--linea", caja:"--caja", exito:"--verde", alerta:"--rojo", fondoBarra:"--fondo-barra"};
   function reglas(colores){
     var r = "";
-    // Sin marca, el acento llega vacío: dejarlo pasar escribiría "--acento:undefined" y el botón principal se quedaría sin fondo.
+    // Sin marca, el acento llega vacío: dejarlo pasar escribiría "--acento:undefined" y la tarjeta se quedaría sin fondo.
     for (var k in colores) if (NOMBRES[k] && colores[k] != null && /^[#\w(),.%\s-]+$/.test(String(colores[k]))) r += NOMBRES[k] + ":" + colores[k] + ";";
     return r;
   }
@@ -274,20 +278,19 @@ details.listo .dentro { margin-top:16px; }
   function queda(t){ return !hecha(t) && t.estado !== "descartado"; }
   function peso(t){ return typeof t.peso === "number" && t.peso > 0 ? t.peso : 1; }
   function plural(n, uno, varios){ return n === 1 ? uno : varios; }
+  function porId(id){ return todas.filter(function(t){ return t.id === id; })[0]; }
 
   var pct = 0;
   function pintarCifra(){
     var utiles = todas.filter(function(t){ return t.estado !== "descartado"; });
     var total = utiles.reduce(function(s, t){ return s + peso(t); }, 0);
     var hecho = utiles.filter(hecha).reduce(function(s, t){ return s + peso(t); }, 0);
-    var n = utiles.filter(hecha).length, resto = utiles.length - n;
+    var n = utiles.filter(hecha).length;
     pct = total ? Math.round(hecho / total * 100) : 0;
-    if (resto && pct > 99) pct = 99;
+    if (utiles.length - n && pct > 99) pct = 99;
     document.title = pct + " % " + (D.titulo || "Seguimiento");
     $("cifra").textContent = pct + " %";
-    $("cifra-texto").textContent = utiles.length
-      ? n + " de " + utiles.length + plural(utiles.length, " tarea hecha", " tareas hechas") + (resto ? ". " + plural(resto, "Queda 1", "Quedan " + resto) + "." : ".")
-      : "Todavía no hay tareas.";
+    $("cifra-texto").textContent = utiles.length ? n + " de " + utiles.length + plural(utiles.length, " hecha", " hechas") : "Sin tareas todavía";
     $("barra").setAttribute("aria-valuenow", String(pct));
     $("barra-i").style.width = pct + "%";
   }
@@ -325,26 +328,23 @@ details.listo .dentro { margin-top:16px; }
     else reserva();
   }
 
-  // Lo que tiene que hacer ya, sí o sí: solo puede hacerlo quien lee y algo se para si no lo hace.
-  // Va arriba del todo y aparte. Como mucho tres; las demás bajan, las primeras, a su sitio de siempre.
+  // Lo que no puede esperar («ya») va primero. Las letras de las decisiones salen en el mismo orden que
+  // da «gresso.py decisiones»: primero las urgentes que caben arriba (tres), luego las demás.
   function esYa(t){ return t.ya === true && deLaPersona(t); }
-  var urgentes = todas.filter(function(t){ return esYa(t) && t.estado !== "hecho" && t.estado !== "descartado"; });
-  var MAX_YA = 3, arribaYa = urgentes.slice(0, MAX_YA), sobranYa = urgentes.slice(MAX_YA);
+  var MAX_YA = 3;
+  var arribaYa = todas.filter(function(t){ return esYa(t) && t.estado !== "hecho" && t.estado !== "descartado"; }).slice(0, MAX_YA);
   function enArriba(t){ return arribaYa.indexOf(t) >= 0; }
   function urgentesPrimero(lista){ return lista.filter(esYa).concat(lista.filter(function(t){ return !esYa(t); })); }
-  var usaYa = todas.some(esYa);
 
-  // Lo que hay que decidir: una abierta cada vez, con sus baldosas, y nada marcado de antemano.
-  // Cada decisión lleva su letra y cada opción su número, en el orden en que salen en la página, para
-  // que «A uno» quiera decir lo mismo aquí, dictado o en otra herramienta que pregunte lo mismo.
+  // Cada decisión lleva su letra y cada opción su número, para que «A uno» quiera decir lo mismo aquí,
+  // dictado o en otra herramienta que pregunte lo mismo.
   function eleccion(t){
     var r = respuestas[t.id] || {};
     return r.opciones ? r.opciones.slice() : (typeof r.opcion === "number" ? [r.opcion] : []);
   }
   function respondida(t){ var r = respuestas[t.id] || {}; return eleccion(t).length > 0 || !!(r.texto && r.texto.trim()); }
   var decisiones = todas.filter(function(t){ return t.decision && queda(t); });
-  var decidirAbajo = urgentesPrimero(decisiones.filter(function(t){ return !enArriba(t); }));
-  var ordenDec = arribaYa.filter(function(t){ return t.decision; }).concat(decidirAbajo);
+  var ordenDec = arribaYa.filter(function(t){ return t.decision; }).concat(urgentesPrimero(decisiones.filter(function(t){ return !enArriba(t); })));
   var LETRAS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   function letra(t){ var i = ordenDec.indexOf(t); return LETRAS[i] || String(i + 1); }
   function elegidas(t){
@@ -360,12 +360,12 @@ details.listo .dentro { margin-top:16px; }
     });
     aPortapapeles(lineas.join("\n"), boton, "Copiado, pégamelo en el chat");
   }
-  function botonCopiar(fuerte){
-    var b = el("button", "boton" + (fuerte ? " fuerte" : ""), "Copiar respuestas"); b.type = "button";
-    b.onclick = function(){ copiarRespuestas(b); };
+  function boton(texto, fuerte, alPulsar){
+    var b = el("button", "boton" + (fuerte ? " fuerte" : ""), texto); b.type = "button";
+    if (alPulsar) b.onclick = function(){ alPulsar(b); };
     return b;
   }
-  // Los dibujos de las baldosas son nuestros y van aquí: la página no descarga nada.
+  // Los dibujos de las opciones son nuestros y van aquí: la página no descarga nada.
   var IC = {
     si:'<polyline points="4 12.5 9.5 18 20 6.5"/>', no:'<path d="M6 6l12 12M18 6L6 18"/>', ya:'<path d="M7 4.5v15l12-7.5z"/>',
     esperar:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
@@ -392,158 +392,250 @@ details.listo .dentro { margin-top:16px; }
     guardar("respuestas", respuestas);
   }
   function mayuscula(x){ x = String(x || ""); return x.charAt(0).toUpperCase() + x.slice(1); }
-  // Lo malo, lo bueno y lo que cuesta de la elegida, una línea cada uno, y por qué es la recomendada.
-  function fichaDe(o, i, conNombre){
-    var caja = el("div");
-    if (conNombre) caja.appendChild(el("p", "elegida-nombre", (i + 1) + " · " + o.texto));
-    if (o.recomendada && o.porque) { var p = el("p", "porque-rec"); p.appendChild(el("b", "", "Por qué te la recomiendo: ")); p.appendChild(document.createTextNode(o.porque)); caja.appendChild(p); }
-    var dl = el("dl", "ficha");
-    [["m", "Lo malo", o.malo], ["b", "Lo bueno", o.bueno], ["", "Te cuesta", o.cuesta], ["", "No hace", mayuscula(o.noHace)]].forEach(function(f){
-      if (!f[2]) return;
-      var fila = el("div", f[0]); fila.appendChild(el("dt", "", f[1])); fila.appendChild(el("dd", "", f[2])); dl.appendChild(fila);
-    });
-    if (dl.children.length) caja.appendChild(dl);
-    return caja;
+
+  // ------------------------------------------------------------------ la tarjeta de arriba
+  // La cola de lo suyo: lo que puede hacer ahora, primero lo urgente, y en el orden de la página.
+  // Una decisión contestada sale de la cola: lo que queda con ella es pasármela.
+  function enCola(t){ return deLaPersona(t) && queda(t) && t.estado !== "bloqueado" && !(t.decision && respondida(t)); }
+  function cola(){ return urgentesPrimero(todas.filter(enCola)); }
+  function resuelta(t){ return hecha(t) || !!(t.decision && respondida(t)); }
+  function laDeAhora(c){
+    // La que subió quien lee (desde «Después», o la decisión que está contestando) sigue delante
+    // hasta que la da por hecha o pasa a la siguiente; si no, la primera de la cola.
+    var f = fijada && porId(fijada);
+    if (f && deLaPersona(f) && queda(f) && f.estado !== "bloqueado") return f;
+    return c[0] || null;
   }
-  // Una tarjeta de decisión: «cuenta» es la línea de arriba, «pie» pone los botones y «repintar» la vuelve a dibujar.
-  function tarjetaDecision(t, cuenta, pie, repintar){
-    var tar = el("article", "tarjeta decide"); tar.id = "t-" + t.id;
-    tar.appendChild(el("p", "cuenta", cuenta));
-    tar.appendChild(el("h3", "", t.texto));
-    if (t.porque) tar.appendChild(rico("p", "porque", t.porque));
+  function fijar(id){ fijada = id; guardarSesion("ahora", id); }
+  function subirTarjeta(){ var c = $("ahora"); if (c.getBoundingClientRect().top < 0) c.scrollIntoView({behavior:"smooth", block:"start"}); }
+  function irA(id){ fijar(id); refrescar(); subirTarjeta(); }
+
+  var pintadaAntes = null;
+  function etiqueta(texto, t){
+    var p = el("p", "eti", texto);
+    if (t && esYa(t)) { p.textContent = texto.replace(/\.?$/, ". "); p.appendChild(el("span", "urge", "No puede esperar.")); }
+    return p;
+  }
+  function puntos(){
+    var suyas = todas.filter(function(t){ return deLaPersona(t) && t.estado !== "descartado"; });
+    if (suyas.length < 2 || suyas.length > 30) return null;
+    var fila = el("div", "puntos"), n = suyas.filter(resuelta).length;
+    fila.setAttribute("role", "img"); fila.setAttribute("aria-label", n + " de " + suyas.length + " cosas tuyas hechas");
+    suyas.forEach(function(t){ fila.appendChild(el("i", resuelta(t) ? "si" : "")); });
+    return fila;
+  }
+  function cuantas(t){
+    var suyas = todas.filter(function(x){ return deLaPersona(x) && x.estado !== "descartado"; });
+    var n = suyas.filter(resuelta).length + (resuelta(t) ? 0 : 1);
+    return suyas.length > 1 ? " (" + Math.min(n, suyas.length) + " de " + suyas.length + ")" : "";
+  }
+  function accionesDe(t, fila, hayFuerte){
+    (t.acciones || []).forEach(function(a){
+      // Lo que se copia no se enseña: solo el nombre del botón.
+      if (a.url && /^(https?:|mailto:|file:)/i.test(a.url)) {
+        var l = el("a", "boton" + (hayFuerte ? "" : " fuerte"), a.texto || "Abrir"); l.href = a.url; l.target = "_blank"; l.rel = "noopener";
+        fila.appendChild(l); hayFuerte = true;
+      } else if (a.copiar !== undefined) {
+        fila.appendChild(boton(a.texto || "Copiar", !hayFuerte, function(b){ aPortapapeles(String(a.copiar), b, "Copiado"); })); hayFuerte = true;
+      }
+    });
+    return hayFuerte;
+  }
+  function tarjetaTarea(caja, t){
+    caja.appendChild(etiqueta("Ahora te toca solo esto" + cuantas(t), t));
+    var cuerpo = el("div", "toca-cuerpo"), que = el("div", "toca-que"), como = el("div", "toca-como");
+    que.appendChild(el("h2", "que", t.texto));
+    if (t.porque) que.appendChild(rico("p", "porque", t.porque));
+    if (t.nota) que.appendChild(rico("p", "nota", t.nota));
+    // Cada paso, envuelto: con una negrita dentro, la rejilla del número partiría la frase en trozos.
+    if (t.pasos && t.pasos.length) { var ol = el("ol", "pasos"); t.pasos.forEach(function(q){ var li = el("li"); li.appendChild(rico("span", "", q)); ol.appendChild(li); }); como.appendChild(ol); }
+    var fila = el("div", "acciones");
+    var hayFuerte = accionesDe(t, fila, false);
+    fila.appendChild(boton("Ya lo he hecho", !hayFuerte, function(){
+      marcas[t.id] = 1; guardar("marcas", marcas);
+      if (fijada === t.id) fijar(null);
+      refrescar(); subirTarjeta();
+    }));
+    como.appendChild(fila);
+    if (t.dime) { var d = rico("p", "dime", t.dime); d.insertBefore(el("b", "", "Luego dime: "), d.firstChild); como.appendChild(d); }
+    // Sin pasos, los botones van a la derecha de lo que es y por qué; con poco que contar, debajo.
+    cuerpo.appendChild(que); cuerpo.appendChild(como);
+    if (!(t.pasos && t.pasos.length) && !t.dime && !t.porque && !t.nota) cuerpo.classList.add("solo");
+    caja.appendChild(cuerpo);
+  }
+  function tarjetaDecision(caja, t, c){
+    caja.appendChild(etiqueta("Ahora te toca decidir esto" + cuantas(t) + ". Decisión " + letra(t) + ".", t));
+    caja.appendChild(el("h2", "que", t.texto));
+    if (t.porque) caja.appendChild(rico("p", "porque", t.porque));
     var ops = t.decision.opciones || [], marcadas = eleccion(t);
-    if (t.decision.varias) tar.appendChild(el("p", "pista", "Puedes marcar más de una."));
-    var rejilla = el("div", "baldosas n" + ops.length + (t.decision.varias ? " varias" : ""));
+    if (t.decision.varias) caja.appendChild(el("p", "nota", "Puedes marcar más de una."));
+    var rejilla = el("div", "opciones" + (t.decision.varias ? " varias" : ""));
     rejilla.setAttribute("role", "group"); rejilla.setAttribute("aria-label", "Opciones");
     ops.forEach(function(o, i){
-      var b = el("button", "baldosa"); b.type = "button"; b.setAttribute("aria-pressed", String(marcadas.indexOf(i) >= 0));
+      var b = el("button", "opcion"); b.type = "button"; b.setAttribute("aria-pressed", String(marcadas.indexOf(i) >= 0));
       var dibujo = icono(o.icono); if (dibujo) b.appendChild(dibujo);
       b.appendChild(el("span", "palabra", (i + 1) + " · " + o.texto));
       if (o.detalle) b.appendChild(el("span", "frase", o.detalle));
       if (o.recomendada) b.appendChild(el("span", "rec", "Te la recomiendo"));
-      b.onclick = function(){ elegir(t, i); repintar(); refrescar(); };
+      b.onclick = function(){
+        elegir(t, i); fijar(t.id); refrescar();
+        var otra = $("ahora").querySelectorAll(".opcion")[i]; if (otra) otra.focus({preventScroll:true});
+      };
       rejilla.appendChild(b);
     });
-    tar.appendChild(rejilla);
-    marcadas.forEach(function(i){ if (ops[i]) tar.appendChild(fichaDe(ops[i], i, marcadas.length > 1)); });
-    if (!marcadas.length && ops.some(function(o){ return o.malo || o.bueno || o.cuesta; })) tar.appendChild(el("p", "pista", "Pulsa una para ver lo malo, lo bueno y lo que te cuesta."));
+    caja.appendChild(rejilla);
+    // La recomendada, dicha con palabras y con su porqué.
+    ops.forEach(function(o, i){
+      if (!o.recomendada) return;
+      var p = el("p", "recomiendo");
+      p.appendChild(el("b", "", "Te recomiendo la " + (i + 1) + ", " + o.texto + (o.porque ? ": " : ".")));
+      if (o.porque) p.appendChild(document.createTextNode(o.porque));
+      caja.appendChild(p);
+    });
+    // Lo malo, lo bueno y lo que cuesta de la elegida, una línea cada uno.
+    marcadas.forEach(function(i){
+      var o = ops[i]; if (!o) return;
+      if (marcadas.length > 1) caja.appendChild(el("p", "elegida-nombre", (i + 1) + " · " + o.texto));
+      var dl = el("dl", "ficha");
+      [["Lo malo", o.malo], ["Lo bueno", o.bueno], ["Te cuesta", o.cuesta], ["No hace", mayuscula(o.noHace)]].forEach(function(f){
+        if (!f[1]) return;
+        var fila = el("div"); fila.appendChild(el("dt", "", f[0])); fila.appendChild(el("dd", "", f[1])); dl.appendChild(fila);
+      });
+      if (dl.children.length) caja.appendChild(dl);
+    });
+    if (!marcadas.length && ops.some(function(o){ return o.malo || o.bueno || o.cuesta; })) caja.appendChild(el("p", "nota", "Pulsa una para ver lo malo, lo bueno y lo que te cuesta."));
     var r = respuestas[t.id] || {};
     var ta = el("textarea"); ta.id = "r-" + t.id; ta.rows = 1; ta.placeholder = "Otra cosa, con tus palabras"; ta.setAttribute("aria-label", "Otra cosa, con tus palabras"); ta.value = r.texto || "";
     function crece(){ ta.style.height = "auto"; ta.style.height = ta.scrollHeight + 4 + "px"; }
+    var copiar = boton("Copiar respuestas", respondida(t), copiarRespuestas);
     ta.oninput = function(){
-      var q = respuestas[t.id] = respuestas[t.id] || {}; q.texto = ta.value; guardar("respuestas", respuestas); crece(); refrescar();
-      var sigue = tar.querySelector(".avanza"); if (sigue) sigue.classList.toggle("fuerte", respondida(t));
+      var q = respuestas[t.id] = respuestas[t.id] || {}; q.texto = ta.value; guardar("respuestas", respuestas);
+      // Escribiendo no se repinta la tarjeta: se perdería lo que estás escribiendo.
+      fijar(t.id); crece(); copiar.classList.toggle("fuerte", respondida(t)); pintarTuyo();
     };
-    tar.appendChild(ta);
-    if (t.decision.siNoDices) tar.appendChild(el("p", "defecto", t.decision.siNoDices));
-    pie(tar);
+    caja.appendChild(ta);
+    if (t.decision.siNoDices) caja.appendChild(el("p", "defecto", t.decision.siNoDices));
+    var fila = el("div", "acciones");
+    fila.appendChild(copiar);
+    var resto = c.filter(function(x){ return x !== t; });
+    if (resto.length) {
+      var k = c.indexOf(t), sig = k >= 0 && c[k + 1] ? c[k + 1] : resto[0];
+      fila.appendChild(boton("Siguiente", false, function(){ irA(sig.id); }));
+    } else if (respondida(t)) {
+      fila.appendChild(boton("Ya he decidido", false, function(){ fijar(null); refrescar(); subirTarjeta(); }));
+    }
+    caja.appendChild(fila);
     setTimeout(crece, 0);
-    return tar;
   }
-
-  // Abajo, en «Lo que tienes que decidir», una cada vez: «Siguiente» para pasar y, al final, lo decidido y un solo «Copiar».
-  var pasoDec = leer("paso", null);
-  function irPaso(id){ pasoDec = id; guardar("paso", id); pintarDecidir(); var c = $("decidir"); if (c.getBoundingClientRect().top < 0) c.scrollIntoView({behavior:"smooth", block:"start"}); }
-  function pintarDecidir(){
-    var caja = $("decidir"), n = decidirAbajo.length;
-    caja.textContent = "";
-    if (!n) return;
-    caja.appendChild(el("h2", "", "Lo que tienes que decidir"));
-    var k = -1;
-    for (var j = 0; j < n; j++) if (decidirAbajo[j].id === pasoDec) k = j;
-    if (pasoDec === "fin" && n > 1) k = n;
-    if (k < 0) { k = 0; for (j = 0; j < n; j++) if (!respondida(decidirAbajo[j])) { k = j; break; } }
-    if (k === n) { caja.appendChild(tarjetaDecidido()); return; }
-    var t = decidirAbajo[k];
-    // La que se ve se queda delante hasta que se pase: si no, al contestarla saltaría sola a la siguiente.
-    if (pasoDec !== t.id) { pasoDec = t.id; guardar("paso", t.id); }
-    caja.appendChild(tarjetaDecision(t, "Decisión " + letra(t) + (n > 1 ? " · " + (k + 1) + " de " + n : ""), function(tar){
-      var fila = el("div", "acciones");
-      if (k > 0) { var atras = el("button", "boton", "Atrás"); atras.type = "button"; atras.onclick = function(){ irPaso(decidirAbajo[k - 1].id); }; fila.appendChild(atras); }
-      var sigue;
-      if (n === 1) sigue = botonCopiar(respondida(t));
-      else { sigue = el("button", "boton" + (respondida(t) ? " fuerte" : ""), k === n - 1 ? "Ver lo que he decidido" : "Siguiente"); sigue.type = "button"; sigue.onclick = function(){ irPaso(k === n - 1 ? "fin" : decidirAbajo[k + 1].id); }; }
-      sigue.classList.add("avanza");
-      fila.appendChild(sigue); tar.appendChild(fila);
-    }, pintarDecidir));
-  }
-  function tarjetaDecidido(){
-    var tar = el("article", "tarjeta"); tar.id = "decidido";
-    tar.appendChild(el("h3", "", "Lo que has decidido"));
+  function tarjetaPasar(caja, pendientes){
+    caja.appendChild(etiqueta("Ahora te toca solo esto"));
+    caja.appendChild(el("h2", "que", "Pásame lo que has decidido"));
+    caja.appendChild(el("p", "porque", "Cópialo y pégamelo en el chat: hasta entonces no me llega."));
     var ol = el("ol", "resumen");
-    ordenDec.forEach(function(t){
+    pendientes.forEach(function(t){
       var li = el("li"), txt = el("div"), r = respuestas[t.id] || {}, propias = r.texto && r.texto.trim(), suyas = elegidas(t);
       txt.appendChild(el("b", "", letra(t) + ". " + t.texto));
       if (suyas) txt.appendChild(el("span", "", suyas));
       if (propias) { if (suyas) txt.appendChild(el("br")); txt.appendChild(el("span", "", "Con tus palabras: " + propias)); }
-      if (!suyas && !propias) txt.appendChild(el("span", "vacia", "Sin contestar"));
-      var cambiar = el("button", "boton", "Cambiar"); cambiar.type = "button";
-      cambiar.onclick = function(){ if (decidirAbajo.indexOf(t) >= 0) irPaso(t.id); else irA(t.id); };
-      li.appendChild(txt); li.appendChild(cambiar); ol.appendChild(li);
+      li.appendChild(txt); li.appendChild(boton("Cambiar", false, function(){ irA(t.id); }));
+      ol.appendChild(li);
     });
-    tar.appendChild(ol);
-    var fila = el("div", "acciones"); fila.appendChild(botonCopiar(true)); tar.appendChild(fila);
-    return tar;
+    caja.appendChild(ol);
+    var fila = el("div", "acciones"); fila.appendChild(boton("Copiar respuestas", true, copiarRespuestas)); caja.appendChild(fila);
   }
-  pintarDecidir();
-
-  // Lo que le toca a quien lee: por qué, pasos, botones y una casilla que cuenta en el porcentaje.
-  function tarjetaToca(t){
-    var tar = el("article", "tarjeta"); tar.id = "t-" + t.id;
-    var fila = el("div", "quien");
-    var c = el("input"); c.type = "checkbox"; c.checked = !!marcas[t.id]; c.setAttribute("aria-label", "Hecho: " + t.texto);
-    var cuerpo = el("div");
-    cuerpo.appendChild(el("h3", "", t.texto));
-    var dentro = el("div", "cuerpo-tarjeta"), textos = el("div", "lado"), hacer = el("div", "lado");
-    if (t.estado === "bloqueado" && t.nota) { var p = rico("p", "", t.nota); p.insertBefore(el("span", "estado-palabra parado", "Parado: "), p.firstChild); textos.appendChild(p); }
-    else if (t.nota) textos.appendChild(rico("p", "", t.nota));
-    if (t.porque) textos.appendChild(rico("p", "", t.porque));
-    if (t.pasos && t.pasos.length) { var ol = el("ol"); t.pasos.forEach(function(q){ ol.appendChild(rico("li", "", q)); }); hacer.appendChild(ol); }
-    if (t.acciones && t.acciones.length) {
-      var ac = el("div", "acciones");
-      t.acciones.forEach(function(a){
-        // Lo que se copia no se enseña: solo el nombre del botón.
-        if (a.url && /^(https?:|mailto:|file:)/i.test(a.url)) { var l = el("a", "boton", a.texto); l.href = a.url; l.target = "_blank"; l.rel = "noopener"; ac.appendChild(l); }
-        else if (a.copiar !== undefined) { var b = el("button", "boton", a.texto || "Copiar"); b.type = "button"; b.onclick = function(){ aPortapapeles(String(a.copiar), b, "Copiado"); }; ac.appendChild(b); }
-      });
-      hacer.appendChild(ac);
+  function punto(x){ x = String(x || "").trim(); return /[.!?…»)]$/.test(x) ? x : x + "."; }
+  // Qué tengo entre manos: lo que está en marcha, si no lo próximo, y si no lo parado.
+  function lineaYo(){
+    var mias = todas.filter(function(t){ return !deLaPersona(t) && t.estado === "haciendo"; });
+    var siguen = todas.filter(function(t){ return !deLaPersona(t) && queda(t) && t.estado !== "bloqueado"; });
+    var paradas = todas.filter(function(t){ return !deLaPersona(t) && t.estado === "bloqueado"; });
+    // Como mucho dos a la vez: más es una lista, y la lista está plegada debajo.
+    if (mias.length) return {que:"Ahora", texto:mias.slice(0, 2).map(function(t){ return punto(t.texto); }).join(" ") + (mias.length > 2 ? " Y " + (mias.length - 2) + " más." : "")};
+    if (siguen.length) return {que:"Lo próximo", texto:punto(siguen[0].texto)};
+    if (paradas.length) return {que:"Parado", texto:punto(paradas[0].texto)};
+    return null;
+  }
+  function tarjetaNada(caja){
+    var terminado = todas.length && !todas.some(queda), yo = lineaYo();
+    caja.appendChild(etiqueta(terminado ? "Terminado" : "Ahora te toca"));
+    caja.appendChild(el("h2", "que", terminado ? "No queda nada por hacer" : "Nada, por ahora"));
+    if (terminado) { caja.appendChild(el("p", "porque", "Lo hecho está abajo, plegado.")); return; }
+    caja.appendChild(el("p", "porque", "Te aviso aquí cuando te necesite."));
+    if (yo) {
+      var p = el("p", "porque");
+      p.appendChild(el("b", "", {Ahora:"Ahora estoy con esto: ", "Lo próximo":"Lo próximo que hago: ", Parado:"Estoy parado en esto: "}[yo.que]));
+      p.appendChild(document.createTextNode(yo.texto));
+      caja.appendChild(p);
     }
-    if (t.dime) hacer.appendChild(rico("p", "dime", t.dime));
-    dentro.appendChild(textos); dentro.appendChild(hacer);
-    cuerpo.appendChild(dentro);
-    function recoger(){ tar.classList.toggle("recogida", !!marcas[t.id]); }
-    c.onchange = function(){ if (c.checked) marcas[t.id] = 1; else delete marcas[t.id]; guardar("marcas", marcas); recoger(); refrescar(); };
-    fila.appendChild(c); fila.appendChild(cuerpo); tar.appendChild(fila);
-    recoger();
-    return tar;
+    if (D.parte) caja.appendChild(rico("p", "nota", D.parte));
   }
-  var tocan = todas.filter(function(t){ return t.quien === "tu" && !t.decision && t.estado !== "hecho" && t.estado !== "descartado" && !enArriba(t); });
-  if (tocan.length) {
-    var cajaToca = $("toca");
-    // Si la página separa lo urgente, lo demás suyo es lo que puede esperar.
-    cajaToca.appendChild(el("h2", "", usaYa ? "Cuando puedas" : "Lo que te toca"));
-    urgentesPrimero(tocan).forEach(function(t){ cajaToca.appendChild(tarjetaToca(t)); });
+  var modoNada = false;
+  function pintarAhora(){
+    var caja = $("ahora"), c = cola(), t = laDeAhora(c);
+    var pendientes = ordenDec.filter(function(x){ return queda(x) && respondida(x); });
+    var clave = t ? t.id : pendientes.length ? "pasar" : "nada";
+    caja.textContent = "";
+    var dentro = el("div");
+    modoNada = false;
+    if (t && t.decision) tarjetaDecision(dentro, t, c);
+    else if (t) tarjetaTarea(dentro, t);
+    else if (pendientes.length) tarjetaPasar(dentro, pendientes);
+    else { tarjetaNada(dentro); modoNada = true; }
+    var p = puntos(); if (p && clave !== "nada") dentro.appendChild(p);
+    // Al pasar a otra cosa, la nueva entra; al repintar la misma, se queda quieta.
+    if (pintadaAntes !== null && pintadaAntes !== clave) dentro.className = "entra";
+    pintadaAntes = clave;
+    caja.appendChild(dentro);
+    pintarDespues(c, t);
+  }
+  function pintarDespues(c, t){
+    var caja = $("despues"), luego = c.filter(function(x){ return x !== t; }).slice(0, 4);
+    caja.textContent = "";
+    caja.hidden = !luego.length;
+    if (!luego.length) return;
+    caja.appendChild(el("h2", "", "Después"));
+    var rejilla = el("div", "fichas-luego");
+    luego.forEach(function(x){
+      var b = el("button", "luego", x.texto); b.type = "button";
+      b.onclick = function(){ irA(x.id); };
+      rejilla.appendChild(b);
+    });
+    caja.appendChild(rejilla);
   }
 
-  // Una decisión urgente va sola en su tarjeta de arriba, con sus baldosas y su «Copiar respuestas».
-  function tarjetaYa(t){
-    var tar = tarjetaDecision(t, "Decisión " + letra(t), function(tar){
-      var fila = el("div", "acciones"), b = botonCopiar(respondida(t)); b.classList.add("avanza"); fila.appendChild(b); tar.appendChild(fila);
-    }, function(){ tar.replaceWith(tarjetaYa(t)); });
-    return tar;
+  // ------------------------------------------------------------- lo plegado de debajo
+  function plegable(clave, resumen, dentro){
+    var det = el("details", "plegable");
+    det.appendChild(el("summary", "", resumen));
+    var d = el("div", "dentro"); d.appendChild(dentro); det.appendChild(d);
+    det.open = !!leerSesion("abierto:" + clave, false);
+    det.addEventListener("toggle", function(){ guardarSesion("abierto:" + clave, det.open); });
+    return det;
   }
-  if (arribaYa.length) {
-    var cajaYa = $("ya"), rejilla = el("div", "ya-tarjetas");
-    cajaYa.appendChild(el("h2", "", "Ya, sí o sí"));
-    arribaYa.forEach(function(t){ rejilla.appendChild(t.decision ? tarjetaYa(t) : tarjetaToca(t)); });
-    cajaYa.appendChild(rejilla);
-    if (sobranYa.length) {
-      var abajoDec = sobranYa.filter(function(t){ return t.decision; }).length;
-      var donde = abajoDec === sobranYa.length ? ", en «Lo que tienes que decidir»" : abajoDec ? "" : ", en «Cuando puedas»";
-      cajaYa.appendChild(el("p", "ya-mas", "Y " + sobranYa.length + " más, abajo" + donde + "."));
-    }
-    cajaYa.setAttribute("data-n", String(arribaYa.length));
-    cajaYa.hidden = false;
+  // Todo lo suyo, con su casilla: para marcar o desmarcar, o subir cualquiera a la tarjeta.
+  function pintarTuyo(){
+    var caja = $("tuyo"), suyas = todas.filter(function(t){ return deLaPersona(t) && t.estado !== "hecho" && t.estado !== "descartado"; });
+    caja.textContent = "";
+    var vistas = 1 + Math.min(4, Math.max(0, cola().length - 1));
+    if (suyas.length <= vistas && !suyas.some(function(t){ return marcada(t) || t.estado === "bloqueado" || (t.decision && respondida(t)); })) return;
+    var ul = el("ul", "tareas");
+    urgentesPrimero(suyas).forEach(function(t){
+      var li = el("li", "tarea" + (marcada(t) ? " marcada" : "")), cuerpo = el("div");
+      if (t.decision) li.appendChild(el("span"));
+      else {
+        var c = el("input"); c.type = "checkbox"; c.checked = marcada(t); c.setAttribute("aria-label", "Hecho: " + t.texto);
+        c.onchange = function(){ if (c.checked) marcas[t.id] = 1; else delete marcas[t.id]; guardar("marcas", marcas); refrescar(); };
+        li.appendChild(c);
+      }
+      var ir = el("button", "ir-a", t.texto); ir.type = "button";
+      if (marcada(t) || t.estado === "bloqueado") ir.disabled = true; else ir.onclick = function(){ irA(t.id); };
+      cuerpo.appendChild(ir);
+      if (t.estado === "bloqueado") { var n = el("span", "nota-fila"); n.appendChild(el("span", "estado-palabra parado", "Parado")); if (t.nota) { n.appendChild(document.createTextNode(": ")); n.appendChild(rico("span", "", t.nota)); } cuerpo.appendChild(n); }
+      else if (t.decision && respondida(t)) cuerpo.appendChild(el("span", "nota-fila", "Decidida: " + (elegidas(t) || "con tus palabras")));
+      li.appendChild(cuerpo); ul.appendChild(li);
+    });
+    var quedan = suyas.filter(function(t){ return !resuelta(t); }).length;
+    caja.appendChild(plegable("tuyo", "Ver todo lo tuyo (" + (quedan ? plural(quedan, "queda 1", "quedan " + quedan) : "hecho") + ")", ul));
   }
 
   function filaTarea(t, sinPalabra){
@@ -554,139 +646,70 @@ details.listo .dentro { margin-top:16px; }
     c.appendChild(el("span", "texto", t.texto));
     if (t.estado === "haciendo") { c.appendChild(document.createTextNode(" ")); c.appendChild(el("span", "estado-palabra", "Ahora")); }
     if (t.estado === "bloqueado" && !sinPalabra) { c.appendChild(document.createTextNode(" ")); c.appendChild(el("span", "estado-palabra parado", "Parado")); }
-    if (t.nota) c.appendChild(rico("span", "nota", t.nota));
+    if (t.nota) c.appendChild(rico("span", "nota-fila", t.nota));
     li.appendChild(c);
     return li;
   }
-
-  // Lo que hace el agente: primero lo parado, luego por fases.
-  var flujo = el("div", "flujo");
-  var paradas = todas.filter(function(t){ return !deLaPersona(t) && t.estado === "bloqueado"; });
-  function enLista(t){ return !deLaPersona(t) && queda(t) && t.estado !== "bloqueado"; }
-  if (paradas.length) {
-    var secP = el("div", "fase");
-    secP.appendChild(el("h3", "parado-cab", "Parado"));
-    var ulP = el("ul", "tareas");
-    paradas.forEach(function(t){ ulP.appendChild(filaTarea(t, true)); });
-    secP.appendChild(ulP);
-    flujo.appendChild(secP);
-  }
-  fases.forEach(function(f){
-    var aqui = (f.tareas || []).filter(enLista);
-    if (!aqui.length) return;
-    var propias = (f.tareas || []).filter(function(t){ return !deLaPersona(t) && t.estado !== "descartado"; });
-    var hechas = propias.filter(hecha).length;
-    var sec = el("div", "fase");
-    var cab = el("div", "fase-cab");
-    if (fases.length > 1 || f.nombre) cab.appendChild(el("h3", "", f.nombre || "Tareas"));
-    if (hechas) cab.appendChild(el("span", "", hechas + " de " + propias.length));
-    sec.appendChild(cab);
+  function listaFase(nombre, tareas, cuenta, claseCab, sinPalabra){
+    var sec = el("div", "fase"), cab = el("div", "fase-cab");
+    if (nombre) cab.appendChild(el("h3", claseCab || "", nombre));
+    if (cuenta) cab.appendChild(el("span", "", cuenta));
+    if (cab.children.length) sec.appendChild(cab);
     var ul = el("ul", "tareas");
-    aqui.forEach(function(t){ ul.appendChild(filaTarea(t)); });
+    tareas.forEach(function(t){ ul.appendChild(filaTarea(t, sinPalabra)); });
     sec.appendChild(ul);
-    flujo.appendChild(sec);
-  });
-  if (flujo.children.length) {
-    $("hago").appendChild(el("h2", "", "Lo que hago yo"));
-    if (flujo.children.length === 1) flujo.classList.add("una");
-    $("hago").appendChild(flujo);
+    return sec;
   }
-  // Dos columnas solo si las dos tienen algo: nunca media página vacía.
-  $("columnas").classList.toggle("sola", !$("toca").children.length || !flujo.children.length);
-  // Sin nada suyo en la columna, ni siquiera ocupa su hueco en la rejilla.
-  $("col-tu").hidden = !$("toca").children.length;
-  $("col-yo").hidden = !flujo.children.length;
 
-  // Lo siguiente sale solo de las tareas.
-  function irA(id){
-    // Una decisión de las de abajo puede no estar a la vista: se pone delante antes de ir a ella.
-    var t = todas.filter(function(x){ return x.id === id; })[0];
-    if (t && decidirAbajo.indexOf(t) >= 0 && pasoDec !== id) { pasoDec = id; guardar("paso", id); pintarDecidir(); }
-    var e = $("t-" + id); if (e) e.scrollIntoView({behavior:"smooth", block:t && t.decision ? "start" : "center"});
-  }
-  function pintarSiguiente(){
-    var caja = $("siguiente");
+  // Lo que hago yo: qué tengo entre manos, el parte, lo parado a la vista y lo demás plegado.
+  function pintarHago(){
+    var caja = $("hago"), mias = todas.filter(function(t){ return !deLaPersona(t); });
     caja.textContent = "";
-    caja.appendChild(el("h2", "", "Lo siguiente"));
-    var mirables = todas.filter(function(t){ return deLaPersona(t) && queda(t) && t.estado !== "bloqueado" && !marcada(t); });
-    function porHacer(t){ return !(t.decision && respondida(t)); }
-    // Lo que está en «Ya, sí o sí» ya se ve arriba: mientras quede algo ahí, la fila «Tú» lo repetiría.
-    var yaArriba = mirables.filter(function(t){ return enArriba(t) && porHacer(t); }).length;
-    var tuya = urgentesPrimero(mirables.filter(function(t){ return !enArriba(t); })).filter(porHacer)[0];
-    var porPasar = mirables.filter(function(t){ return t.decision && respondida(t); });
-    var filaTu = el("div", "fila-sig");
-    filaTu.appendChild(el("b", "", "Tú"));
-    if (yaArriba) {
-      filaTu = null;
-    } else if (tuya) {
-      filaTu.appendChild(el("span", "que", (tuya.decision ? "Decidir: " : "") + tuya.texto));
-      var ir = el("button", "boton fuerte", tuya.decision ? "Ir a la decisión" : "Ir a ese paso");
-      ir.type = "button"; ir.onclick = function(){ irA(tuya.id); };
-      filaTu.appendChild(ir);
-    } else if (porPasar.length) {
-      filaTu.appendChild(el("span", "que", "Pasarme lo que has decidido"));
-      var pasar = el("button", "boton fuerte", "Copiar respuestas");
-      pasar.type = "button"; pasar.onclick = function(){ copiarRespuestas(pasar); };
-      filaTu.appendChild(pasar);
-    } else {
-      filaTu.appendChild(el("span", "que", "Nada ahora mismo. Te aviso aquí cuando te necesite."));
+    var paradas = mias.filter(function(t){ return t.estado === "bloqueado"; });
+    var siguen = mias.filter(function(t){ return queda(t) && t.estado !== "bloqueado"; });
+    var yo = lineaYo();
+    // Si la tarjeta de arriba ya dice lo que hago, aquí no se repite. Lo parado ya sale en su lista.
+    var conAhora = !modoNada && yo && yo.que !== "Parado", conParte = !modoNada && D.parte;
+    if (!conAhora && !conParte && !paradas.length && !siguen.length) { caja.hidden = true; return; }
+    caja.hidden = false;
+    caja.appendChild(el("h2", "", "Lo que hago yo"));
+    if (conAhora) { var p = el("p", "ahora-yo"); p.appendChild(el("b", "", yo.que + ": ")); p.appendChild(document.createTextNode(yo.texto)); caja.appendChild(p); }
+    if (conParte) caja.appendChild(rico("p", "parte", D.parte));
+    if (paradas.length) caja.appendChild(listaFase("Parado", paradas, "", "parado-cab", true));
+    if (siguen.length) {
+      var flujo = el("div", "flujo");
+      fases.forEach(function(f){
+        var aqui = (f.tareas || []).filter(function(t){ return siguen.indexOf(t) >= 0; });
+        if (!aqui.length) return;
+        var propias = (f.tareas || []).filter(function(t){ return !deLaPersona(t) && t.estado !== "descartado"; });
+        var hechas = propias.filter(hecha).length;
+        flujo.appendChild(listaFase(fases.length > 1 || f.nombre ? f.nombre || "Tareas" : "", aqui, hechas ? hechas + " de " + propias.length : ""));
+      });
+      if (flujo.children.length > 1) flujo.classList.add("dos");
+      caja.appendChild(plegable("mias", "Lo que me queda (" + siguen.length + ")", flujo));
     }
-    if (filaTu) caja.appendChild(filaTu);
-    var mias = todas.filter(function(t){ return !deLaPersona(t) && t.estado === "haciendo"; });
-    var quedanMias = todas.filter(function(t){ return !deLaPersona(t) && queda(t); });
-    var filaYo = el("div", "fila-sig");
-    filaYo.appendChild(el("b", "", "Yo"));
-    var ahora;
-    if (mias.length) ahora = mias.map(function(t){ return t.texto; }).join(". ");
-    else if (!todas.some(queda) && todas.length) ahora = "Terminado.";
-    else if (mirables.length) ahora = "Esperándote: no tengo nada en marcha.";
-    else if (quedanMias.filter(function(t){ return t.estado !== "bloqueado"; }).length) ahora = "Nada en marcha ahora mismo. Lo próximo: " + quedanMias.filter(function(t){ return t.estado !== "bloqueado"; })[0].texto;
-    else if (quedanMias.length) ahora = "Parado: " + quedanMias[0].texto;
-    else ahora = "Nada en marcha ahora mismo.";
-    filaYo.appendChild(el("span", "que", ahora));
-    if (D.parte) filaYo.appendChild(rico("span", "como", D.parte));
-    caja.appendChild(filaYo);
   }
 
   // Lo que ya está listo, plegado y al final: no es lo que hay que mirar.
-  var plegado = null;
   function pintarListo(){
-    var caja = $("listo"), abierto = false;
-    try { abierto = plegado ? plegado.open : sessionStorage.getItem(CLAVE + ":listo") === "1"; } catch(_){}
+    var caja = $("listo");
     caja.textContent = "";
     var listas = todas.filter(hecha), fuera = todas.filter(function(t){ return t.estado === "descartado"; });
-    if (!listas.length && !fuera.length) { plegado = null; return; }
-    var det = el("details", "listo");
-    det.appendChild(el("summary", "", listas.length ? "Lo que ya está listo (" + listas.length + ")" : "Descartado (" + fuera.length + ")"));
-    var dentro = el("div", "dentro flujo siempre");
+    if (!listas.length && !fuera.length) return;
+    var flujo = el("div", "flujo dos");
     fases.forEach(function(f){
       var aqui = (f.tareas || []).filter(hecha);
-      if (!aqui.length) return;
-      var sec = el("div", "fase");
-      sec.appendChild(el("h3", "", f.nombre || "Tareas"));
-      var ul = el("ul", "tareas");
-      aqui.forEach(function(t){ ul.appendChild(filaTarea(t)); });
-      sec.appendChild(ul);
-      dentro.appendChild(sec);
+      if (aqui.length) flujo.appendChild(listaFase(f.nombre || "Tareas", aqui, ""));
     });
-    if (fuera.length) {
-      var secF = el("div", "fase");
-      if (listas.length) secF.appendChild(el("h3", "", "Descartado"));
-      var ulF = el("ul", "tareas");
-      fuera.forEach(function(t){ ulF.appendChild(filaTarea(t)); });
-      secF.appendChild(ulF);
-      dentro.appendChild(secF);
-    }
-    det.appendChild(dentro);
-    det.open = abierto;
-    det.addEventListener("toggle", function(){ try { sessionStorage.setItem(CLAVE + ":listo", det.open ? "1" : "0"); } catch(_){} });
-    caja.appendChild(det);
-    plegado = det;
+    if (fuera.length) flujo.appendChild(listaFase(listas.length ? "Descartado" : "", fuera, ""));
+    caja.appendChild(plegable("listo", listas.length ? "Lo que ya está listo (" + listas.length + ")" : "Descartado (" + fuera.length + ")", flujo));
   }
 
   function refrescar(){
     pintarCifra();
-    pintarSiguiente();
+    pintarAhora();
+    pintarTuyo();
+    pintarHago();
     pintarListo();
     pintarSello();
   }
